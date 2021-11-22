@@ -1,13 +1,14 @@
 %%
-%% This is file `fithesis-english.def',
+%% This is file `mu/fi/fithesis-english.def',
 %% generated with the docstrip utility.
 %%
 %% The original source files were:
 %%
-%% english.dtx  (with options: `base')
+%% english.dtx  (with options: `mu/fi')
 %% 
-%% Copyright 1998--2020  Daniel Marek (DM), Jan Pavlovič (JP),
-%%                       Vít Novotný (VN), Petr Sojka (PS)
+%% Copyright 1998--2021  Daniel Marek (DM), Jan Pavlovič (JP),
+%%                       Vít Novotný (VN), Tereza Vrabcová (TV),
+%%                       Petr Sojka (PS)
 %% http://www.fi.muni.cz/tech/unix/tex/fithesis.xhtml
 %% Faculty of Informatics, Masaryk University (Brno, Czech Republic)
 %% 
@@ -49,85 +50,23 @@
 %% 
 %% The names of the source files used are shown above.
 %% 
-\ProvidesFile{fithesis/locale/fithesis-english.def}[2017/09/08]
+\ProvidesFile{fithesis/locale/mu/fi/fithesis-english.def}[2021/02/26]
 
-\gdef\thesis@english@universityName{University name}
-\gdef\thesis@english@facultyName{Faculty name}
+\gdef\thesis@english@facultyName{Faculty of Informatics}
+\gdef\thesis@english@assignment{Replace this page with a copy
+  of the official signed thesis assignment and a copy of the
+  Statement of an Author.}
 \gdef\thesis@english@assignment{%
-  This is where a copy of the official signed thesis assignment
-  is located in the printed version of the document.}
-\gdef\thesis@english@declaration{Declaration text ...}
-
-\gdef\thesis@english@csquotesStyle{english}
-
-\gdef\thesis@english@spring{Spring}
-\gdef\thesis@english@fall{Fall}
-\gdef\thesis@english@semester{%
-  \thesis@{english@\thesis@season} \thesis@seasonYear}
-\gdef\thesis@english@formattedDate{{%
-  \thesis@day.
-  \newcount\@month\expandafter\@month\thesis@month\relax
-  \ifnum\@month=1%
-    January
-  \else\ifnum\@month=2%
-    February
-  \else\ifnum\@month=3%
-    March
-  \else\ifnum\@month=4%
-    April
-  \else\ifnum\@month=5%
-    May
-  \else\ifnum\@month=6%
-    June
-  \else\ifnum\@month=7%
-    July
-  \else\ifnum\@month=8%
-    August
-  \else\ifnum\@month=9%
-    September
-  \else\ifnum\@month=10%
-    October
-  \else\ifnum\@month=11%
-    November
-  \else\ifnum\@month=12%
-    December
+  \ifthesis@digital@
+    This is where a copy of the official signed thesis assignment
+    and a copy of the Statement of an Author is located in the
+    printed version of the document.
   \else
-    <<unknown month (\the\@month)>>
-  \fi\fi\fi\fi\fi\fi
-  \fi\fi\fi\fi\fi\fi
-  \thesis@year}}
+    Replace this page with a copy of the official signed thesis
+    assignment and a copy of the Statement of an Author.
+  \fi}
 
-\gdef\thesis@english@authorSignature{Author's signature}
-\gdef\thesis@english@fieldTitle{Field of study}
-\gdef\thesis@english@advisorTitle{Advisor}
-\gdef\thesis@english@authorTitle{Author}
-\gdef\thesis@english@abstractTitle{Abstract}
-\gdef\thesis@english@keywordsTitle{Keywords}
-\gdef\thesis@english@thanksTitle{Acknowledgements}
-\gdef\thesis@english@declarationTitle{Declaration}
-\gdef\thesis@english@idTitle{ID}
-\gdef\thesis@english@typeName@sempaper{Seminar Paper}
-\gdef\thesis@english@typeName@bachelors{Bachelor's Thesis}
-\gdef\thesis@english@typeName@masters{Master's Thesis}
-\gdef\thesis@english@typeName@proposal{Thesis Proposal}
-\gdef\thesis@english@typeName@doctoral{Doctoral Thesis}
-\gdef\thesis@english@typeName@rigorous{Rigorous Thesis}
-\gdef\thesis@english@typeName{%
-  \ifx\thesis@type\thesis@sempaper
-    \thesis@english@typeName@sempaper
-  \else\ifx\thesis@type\thesis@bachelors
-    \thesis@english@typeName@bachelors
-  \else\ifx\thesis@type\thesis@masters
-    \thesis@english@typeName@masters
-  \else\ifx\thesis@type\thesis@proposal
-    \thesis@english@typeName@proposal
-  \else\ifx\thesis@type\thesis@doctoral
-    \thesis@english@typeName@doctoral
-  \else\ifx\thesis@type\thesis@rigorous
-    \thesis@english@typeName@rigorous
-  \else
-    <<Unknown thesis type (\thesis@type)>>%
-  \fi\fi\fi\fi\fi\fi}
+\gdef\thesis@english@typeName@proposal{Ph.D. Thesis Proposal}
 \endinput
 %%
-%% End of file `fithesis-english.def'.
+%% End of file `mu/fi/fithesis-english.def'.

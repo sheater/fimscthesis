@@ -6,8 +6,9 @@
 %%
 %% english.dtx  (with options: `base')
 %% 
-%% Copyright 1998--2020  Daniel Marek (DM), Jan Pavlovič (JP),
-%%                       Vít Novotný (VN), Petr Sojka (PS)
+%% Copyright 1998--2021  Daniel Marek (DM), Jan Pavlovič (JP),
+%%                       Vít Novotný (VN), Tereza Vrabcová (TV),
+%%                       Petr Sojka (PS)
 %% http://www.fi.muni.cz/tech/unix/tex/fithesis.xhtml
 %% Faculty of Informatics, Masaryk University (Brno, Czech Republic)
 %% 
@@ -49,7 +50,7 @@
 %% 
 %% The names of the source files used are shown above.
 %% 
-\ProvidesFile{fithesis/locale/fithesis-english.def}[2017/09/08]
+\ProvidesFile{fithesis/locale/fithesis-english.def}[2021/02/26]
 
 \gdef\thesis@english@universityName{University name}
 \gdef\thesis@english@facultyName{Faculty name}
@@ -98,13 +99,16 @@
   \thesis@year}}
 
 \gdef\thesis@english@authorSignature{Author's signature}
-\gdef\thesis@english@fieldTitle{Field of study}
+\gdef\thesis@english@advisorSignature{Signature of Thesis
+  \thesis@english@advisorTitle}
+\gdef\thesis@english@fieldTitle{Field of Study}
 \gdef\thesis@english@advisorTitle{Advisor}
 \gdef\thesis@english@authorTitle{Author}
 \gdef\thesis@english@abstractTitle{Abstract}
 \gdef\thesis@english@keywordsTitle{Keywords}
 \gdef\thesis@english@thanksTitle{Acknowledgements}
 \gdef\thesis@english@declarationTitle{Declaration}
+\gdef\thesis@english@summaryTitle{Summary}
 \gdef\thesis@english@idTitle{ID}
 \gdef\thesis@english@typeName@sempaper{Seminar Paper}
 \gdef\thesis@english@typeName@bachelors{Bachelor's Thesis}

@@ -1,13 +1,14 @@
 %%
-%% This is file `fithesis-english.def',
+%% This is file `mu/fithesis-english.def',
 %% generated with the docstrip utility.
 %%
 %% The original source files were:
 %%
-%% english.dtx  (with options: `base')
+%% english.dtx  (with options: `mu')
 %% 
-%% Copyright 1998--2020  Daniel Marek (DM), Jan Pavlovič (JP),
-%%                       Vít Novotný (VN), Petr Sojka (PS)
+%% Copyright 1998--2021  Daniel Marek (DM), Jan Pavlovič (JP),
+%%                       Vít Novotný (VN), Tereza Vrabcová (TV),
+%%                       Petr Sojka (PS)
 %% http://www.fi.muni.cz/tech/unix/tex/fithesis.xhtml
 %% Faculty of Informatics, Masaryk University (Brno, Czech Republic)
 %% 
@@ -49,85 +50,44 @@
 %% 
 %% The names of the source files used are shown above.
 %% 
-\ProvidesFile{fithesis/locale/fithesis-english.def}[2017/09/08]
+\ProvidesFile{fithesis/locale/mu/fithesis-english.def}[2017/07/09]
+\gdef\thesis@english@universityName{Masaryk University}
+\gdef\thesis@english@declaration{%
+  Hereby I declare that this paper is my original authorial work,
+  which I have worked out on my own. All sources, references, and
+  literature used or excerpted during elaboration of this work are
+  properly cited and listed in complete reference to the due source.}
 
-\gdef\thesis@english@universityName{University name}
-\gdef\thesis@english@facultyName{Faculty name}
 \gdef\thesis@english@assignment{%
-  This is where a copy of the official signed thesis assignment
-  is located in the printed version of the document.}
-\gdef\thesis@english@declaration{Declaration text ...}
-
-\gdef\thesis@english@csquotesStyle{english}
-
-\gdef\thesis@english@spring{Spring}
-\gdef\thesis@english@fall{Fall}
-\gdef\thesis@english@semester{%
-  \thesis@{english@\thesis@season} \thesis@seasonYear}
-\gdef\thesis@english@formattedDate{{%
-  \thesis@day.
-  \newcount\@month\expandafter\@month\thesis@month\relax
-  \ifnum\@month=1%
-    January
-  \else\ifnum\@month=2%
-    February
-  \else\ifnum\@month=3%
-    March
-  \else\ifnum\@month=4%
-    April
-  \else\ifnum\@month=5%
-    May
-  \else\ifnum\@month=6%
-    June
-  \else\ifnum\@month=7%
-    July
-  \else\ifnum\@month=8%
-    August
-  \else\ifnum\@month=9%
-    September
-  \else\ifnum\@month=10%
-    October
-  \else\ifnum\@month=11%
-    November
-  \else\ifnum\@month=12%
-    December
+  \ifthesis@digital@
   \else
-    <<unknown month (\the\@month)>>
-  \fi\fi\fi\fi\fi\fi
-  \fi\fi\fi\fi\fi\fi
-  \thesis@year}}
-
-\gdef\thesis@english@authorSignature{Author's signature}
-\gdef\thesis@english@fieldTitle{Field of study}
-\gdef\thesis@english@advisorTitle{Advisor}
-\gdef\thesis@english@authorTitle{Author}
-\gdef\thesis@english@abstractTitle{Abstract}
-\gdef\thesis@english@keywordsTitle{Keywords}
-\gdef\thesis@english@thanksTitle{Acknowledgements}
-\gdef\thesis@english@declarationTitle{Declaration}
-\gdef\thesis@english@idTitle{ID}
-\gdef\thesis@english@typeName@sempaper{Seminar Paper}
-\gdef\thesis@english@typeName@bachelors{Bachelor's Thesis}
-\gdef\thesis@english@typeName@masters{Master's Thesis}
-\gdef\thesis@english@typeName@proposal{Thesis Proposal}
-\gdef\thesis@english@typeName@doctoral{Doctoral Thesis}
-\gdef\thesis@english@typeName@rigorous{Rigorous Thesis}
-\gdef\thesis@english@typeName{%
-  \ifx\thesis@type\thesis@sempaper
-    \thesis@english@typeName@sempaper
-  \else\ifx\thesis@type\thesis@bachelors
-    \thesis@english@typeName@bachelors
-  \else\ifx\thesis@type\thesis@masters
-    \thesis@english@typeName@masters
-  \else\ifx\thesis@type\thesis@proposal
-    \thesis@english@typeName@proposal
-  \else\ifx\thesis@type\thesis@doctoral
-    \thesis@english@typeName@doctoral
-  \else\ifx\thesis@type\thesis@rigorous
-    \thesis@english@typeName@rigorous
+  \fi}
+\gdef\thesis@english@assignment{%
+  \ifthesis@blocks@assignment@hideIfDigital@
+    \ifthesis@digital@
+      This is where a copy of the official signed thesis assignment
+      is located in the printed version of the document.
+    \else
+      Replace this page with a copy of the official signed thesis
+      assignment.
+    \fi
   \else
-    <<Unknown thesis type (\thesis@type)>>%
-  \fi\fi\fi\fi\fi\fi}
+    Set the PDF document containing the official signed thesis
+    assignment using the <<assignment>> key.
+  \fi}
+
+\gdef\thesis@english@bib@title{Bibliographic record}
+\gdef\thesis@english@bib@pages{p}
+\global\let\thesis@english@bib@author\thesis@english@authorTitle
+\gdef\thesis@english@bib@thesisTitle{Title of Thesis}
+\gdef\thesis@english@bib@advisor{Supervisor}
+\gdef\thesis@english@bib@programme{Degree Programme}
+\global\let\thesis@english@bib@field\thesis@english@fieldTitle
+\gdef\thesis@english@bib@academicYear{Academic Year}
+\gdef\thesis@english@bib@pages{Number of Pages}
+\global\let\thesis@english@bib@keywords\thesis@english@keywordsTitle
+
+\gdef\thesis@english@idTitle{UČO}
 \endinput
 %%
-%% End of file `fithesis-english.def'.
+%% End of file `mu/fithesis-english.def'.

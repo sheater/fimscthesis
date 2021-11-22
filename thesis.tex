@@ -1,37 +1,51 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% I, the copyright holder of this work, release this work into the
+%% public domain. This applies worldwide. In some countries this may
+%% not be legally possible; if so: I grant anyone the right to use
+%% this work for any purpose, without any conditions, unless such
+%% conditions are required by law.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \documentclass[
   digital, %% The `digital` option enables the default options for the
            %% digital version of a document. Replace with `printed`
            %% to enable the default options for the printed version
            %% of a document.
 %%  color,   %% Uncomment these lines (by removing the %% at the
-%%           %% beginning) to use color in the digital version of your
+%%           %% beginning) to use color in the printed version of your
 %%           %% document
-  table,   %% The `table` option causes the coloring of tables.
-           %% Replace with `notable` to restore plain LaTeX tables.
-  twoside, %% The `twoside` option enables double-sided typesetting.
-           %% Use at least 120 g/m² paper to prevent show-through.
-           %% Replace with `oneside` to use one-sided typesetting;
-           %% use only if you don’t have access to a double-sided
-           %% printer, or if one-sided typesetting is a formal
-           %% requirement at your faculty.
-  12pt,
+  oneside, %% The `oneside` option enables one-sided typesetting,
+           %% which is preferred if you are only going to submit a
+           %% digital version of your thesis. Replace with `twoside`
+           %% for double-sided typesetting if you are planning to
+           %% also print your thesis. For double-sided typesetting,
+           %% use at least 120 g/m² paper to prevent show-through.
   lof,     %% The `lof` option prints the List of Figures. Replace
            %% with `nolof` to hide the List of Figures.
   lot,     %% The `lot` option prints the List of Tables. Replace
            %% with `nolot` to hide the List of Tables.
-  %% More options are listed in the user guide at
-  %% <http://mirrors.ctan.org/macros/latex/contrib/fithesis/guide/mu/fi.pdf>.
-]{fithesis3}
+]{fithesis4}
 %% The following section sets up the locales used in the thesis.
 \usepackage[resetfonts]{cmap} %% We need to load the T2A font encoding
 \usepackage[T1,T2A]{fontenc}  %% to use the Cyrillic fonts with Russian texts.
+\usepackage[utf8]{inputenc}
 \usepackage[
-  main=english,
-  english
-]{babel}
-\usepackage[backend=bibtex]{biblatex}
-% \usepackage{paratype}
-% \def\textrussian#1{{\usefont{T2A}{PTSerif-TLF}{m}{rm}#1}}
+  main=english, %% By using `czech` or `slovak` as the main locale
+                %% instead of `english`, you can typeset the thesis
+                %% in either Czech or Slovak, respectively.
+  english, german, russian, czech, slovak %% The additional keys allow
+]{babel}        %% foreign texts to be typeset as follows:
+\DeclareUnicodeCharacter{0301}{\'{e}}
+%%
+%%   \begin{otherlanguage}{german}  ... \end{otherlanguage}
+%%   \begin{otherlanguage}{russian} ... \end{otherlanguage}
+%%   \begin{otherlanguage}{czech}   ... \end{otherlanguage}
+%%   \begin{otherlanguage}{slovak}  ... \end{otherlanguage}
+%%
+%% For non-Latin scripts, it may be necessary to load additional
+%% fonts:
+\usepackage{paratype}
+\def\textrussian#1{{\usefont{T2A}{PTSerif-TLF}{m}{rm}#1}}
 %%
 %% The following section sets up the metadata of the thesis.
 \thesissetup{
@@ -39,41 +53,43 @@
     university  = mu,
     faculty     = fi,
     type        = mgr,
+    department  = Department of Machine Learning and Data Processing,
     author      = {Ing. Štěpán Skovajsa},
     gender      = m,
     advisor     = {RNDr. Petr Novotný, Ph.D.},
     title       = {Modelling of Infection Risk via Probabilistic Programming},
     keywords    = {Bayes theorem, Bayesian inference, statistics, Distribution function, Probabilistic programming, Probabilistic model, PyMC3, Monte-Carlo simulation, Hamiltonian Monte-Carlo, Covid-19, Epidemiology, Epidemiological risk, Infection, Disease, SIR model, Reproduction number},
     abstract    = {%
-		In the epidemiology, there is no holy grail for modelling the risk of infection. Usually, the epidemiologists publish reports with daily incidence and reproduction numbers as a product of some epidemiologic model. Unfortunatelly, this indicator is less interpretable by common people. Moreover, these estimates of the reproduction numbers are, in most cases, approximated for wider geographical segments, usually whole states, ignoring spatial differences between regions. The primary cause is the ordinary models can't work with insufficient or very noisy data (i.e. zero-inflated daily incidence).
-		This thesis provides robust probabilistic mathematical model and Monte Carlo solution for determining the systematic risk of encountering infectious individual given the number of contacts in individual geographic areas. Also the minimal required theory for understanding the approach is presented.
-		Although the probabilistic model is tuned for modelling the risk of being infected by Covid-19 in specific districts of the Czechia, it might be, with little adjustment, used for modelling other epidemies as well.
+      In the epidemiology, there is no holy grail for modelling the risk of infection. Usually, the epidemiologists publish reports with daily incidence and reproduction numbers as a product of some epidemiologic model. Unfortunatelly, this indicator is less interpretable by common people. Moreover, these estimates of the reproduction numbers are, in most cases, approximated for wider geographical segments, usually whole states, ignoring spatial differences between regions. The primary cause is the ordinary models can't work with insufficient or very noisy data (i.e. zero-inflated daily incidence).
+
+      This thesis provides robust probabilistic mathematical model and Monte Carlo solution for determining the systematic risk of encountering infectious individual given the number of contacts in individual geographic areas. Also the minimal required theory for understanding the approach is presented.
+
+      Although the probabilistic model is tuned for modelling the risk of being infected by Covid-19 in specific districts of the Czechia, it might be, with little adjustment, used for modelling other epidemies as well.
     },
     thanks      = {%
       I would like to thank to my supervisor, RNDr. Petr Novotný,~Ph.D.,~especially for introducing me into probabilistic modeling and for the challenge I was able to take by choosing the thesis proposal. Also for his guidance, support and valuable advices, he provided for entire process. I would also like to thank to every author of each title mentioned in bibliography for their work, so I was able to built this thesis. And also, I won't forget to thank to my family and girlfriend for their support.
     },
     bib         = references.bib,
-    %% Uncomment the following line (by removing the %% at the
-    %% beginning) and replace `assignment.pdf` with the filename
-    %% of your scanned thesis assignment.
-    %%    assignment         = assignment.pdf,
+    %% Remove the following line to use the JVS 2018 faculty logo.
+    facultyLogo = fithesis-fi,
 }
 \usepackage{makeidx}      %% The `makeidx` package contains
 \makeindex                %% helper commands for index typesetting.
+% \usepackage[acronym]{glossaries}          %% The `glossaries` package
+% \renewcommand*\glspostdescription{\hfill} %% contains helper commands
+% \loadglsentries{example-terms-abbrs.tex}  %% for typesetting glossaries
+% \makenoidxglossaries                      %% and lists of abbreviations.
 %% These additional packages are used within the document:
 \usepackage{paralist} %% Compact list environments
 \usepackage{amsmath}  %% Mathematics
 \usepackage{amsthm}
 \usepackage{amsfonts}
+\usepackage{amssymb}
 \usepackage{url}      %% Hyperlinks
+\makeatletter
+\g@addto@macro{\UrlBreaks}{\UrlOrds}
+\makeatother
 \usepackage{markdown} %% Lightweight markup
-\usepackage{tabularx} %% Tables
-\usepackage{tabu}
-\usepackage{booktabs}
-\usepackage{setspace}
-\usepackage{etoolbox}
-\AtBeginEnvironment{quote}{\singlespace\vspace{-\topsep}\small}
-\AtEndEnvironment{quote}{\vspace{-\topsep}\endsinglespace}
 \usepackage{listings} %% Source code highlighting
 \lstset{
   basicstyle      = \ttfamily,
@@ -87,17 +103,22 @@
 }
 \usepackage{floatrow} %% Putting captions above tables
 \floatsetup[table]{capposition=top}
-% \usepackage[
-% %   backend=biber,
-% %   style=ieee,
-%   sorting=none
-% ]{biblatex}
-
+\usepackage[babel]{csquotes} %% Context-sensitive quotation marks
 \begin{document}
+%% Uncomment the following lines (by removing the %% at the beginning)
+%% and to print out List of Abbreviations and/or Glossary in your
+%% document. Titles for these tables can be changed by replacing the
+%% titles `Abbreviations` and `Glossary`, respectively.
+%% \clearpage
+%% \printnoidxglossary[title={Abbreviations}, type=\acronymtype]
+%% \printnoidxglossary[title={Glossary}]
 
-“Probability theory is nothing more than common sense reduced to calculation.” — Pierre Simon Laplace, 1819
-
+%% The \chapter* command can be used to produce unnumbered chapters:
 \chapter*{Introduction}
+%% Unlike \chapter, \chapter* does not update the headings and does not
+%% enter the chapter to the table of contents. I we want correct
+%% headings and a table of contents entry, we must add them manually:
+\markright{\textsc{Introduction}}
 \addcontentsline{toc}{chapter}{Introduction}
 
 Epidemiology subsumes several science disciplines like biology, 
@@ -143,6 +164,7 @@ not for lower administrative units such as cities, districts or regions.
 For these reasons this thesis present more human friendly 
 probabilistic approach to model systematic epidemic risk of
 infectious contact.
+
 
 \section{The risk modelling}
 
@@ -230,10 +252,10 @@ for Disease Control and Prevention (CDC) provides the
 following definition for \textit{epidemiology} \cite{cdc2006}:
 
 \begin{displayquote}
-``Epidemiology is the study of the distribution and
-determinants of health-related states or events in specified
-populations, and the application of this study to the control
-of health problems.''
+  ``Epidemiology is the study of the distribution and
+  determinants of health-related states or events in specified
+  populations, and the application of this study to the control
+  of health problems.''
 \end{displayquote}
 
 Nowadays, the mathematical modelling is necessary 
@@ -242,6 +264,7 @@ of $\mathcal{R}_0$ to reveal severity of that disease.
 Later then, it helps with decision 
 making during the pandemic state, keeping population safe 
 according to health, economy and social amenities.
+  
 
 
 \section{History of mathematical modelling in the epidemiology}
@@ -262,50 +285,85 @@ modern mathematical epidemiology due to his controbution
 to mathematical modelling of malaria
 transmission. He derived a threshold quantity, which is 
 nowadays known as a \textit{basic reproduction number}
-denoted by $\mathcal{R}_0$.
+denoted by $\mathcal{R}_0$ (more on this later).
 Unfortunately, at his times, the mathematical modelling 
-of the diseases was not very accepted.
-The change of mind in this field was caused by the discovery 
-of SIR model in 1927 by W. O. Kermack and 
+of the diseases was not very accepted by the professional community.
+The change of mind in this field was bring by the invention 
+of mathematical foundations of SIR model in 1927 by W. O. Kermack and 
 A. G. McKendrick \cite{kermack1927}.
 
 
-\section{Glossary and evolution of infectiousness}
+
+\section{Epidemiological glossary}
+
+The picture \ref{fig:epidemiologists-bathtub} explains the most basic
+terms such as \textit{incidence}, \textit{prevalence}, \textit{mortality}
+and \textit{recovery} in the bathtub analogy:
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=\textwidth]{images/zhao2020_terms.png}
+    \includegraphics[width=6cm]{static/epidemiologists-bathtub.png}
   \end{center}
-  \caption{The demonstrative timeline of a transmission chain for a pair of infector and infectee. \cite{zhao2020}}
+  \caption{The "epidemiologist's bathtub" \cite{arnold2020}}
+  \label{fig:epidemiologists-bathtub}
+\end{figure}
+
+Let the bath represent a
+set of infected people (those who carry the disease) in certain time.
+The size of this set is so-called \textit{prevalence} (sometimes also referred 
+as \textit{active cases} number) for that time.
+The prevalence can be \textit{increased} or \textit{decreased} when time is shifted upwards.
+The increase is referred as the \textit{incidence} (will be mostly denoted $c$ here).
+In the case of decrease of prevalence, this may be done in two ways:
+the infected individual dies - increase in \textit{mortality}, or, the
+infected individual get restored from the disease - get 
+\textit{recovered} in terms of epidemiology.
+If we do not distinguish the way of decrease, we say the
+individual was \textit{removed}.
+
+Basically, from the perspective of specific case, the disease is
+transmitted between \textit{infector} $A$ and \textit{infectee} $B$.
+The \textit{infector} (also known as \textit{primary case}) is the one who carry the disease and
+\textit{infectee} (also known as \textit{secondary case}) is the 
+susceptible person, which is being infected.
+This abstraction allows to specify several important time intervals.
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=11cm]{static/zhao2020_terms.png}
+  \end{center}
+  \caption{The demonstrative timeline of a transmission chain for a pair of infector and infectee \cite{zhao2020}}
   \label{fig:zhao-transmissive-chain-example}
 \end{figure}
 
-In the figure \ref{fig:zhao-transmissive-chain-example}, some of the 
-epidemiological terms are such as \textit{incubation period}, which is the time
-between exposure up to time of onset symptoms, where onset symptoms
-indicate \textit{symptomatic period}.
+These intervals are described in the figure 
+\ref{fig:zhao-transmissive-chain-example}.
+Most important time intervals are 
+\textit{incubation period}, \textit{serial interval} and \textit{generation time}.
+\textit{Incubation period} is the time between exposure up to time of onset 
+symptoms. Then \textit{symptomatic period} begins.
+\textit{Generation time} is the exact time period between 
+the infector was infected and the infectee was infected by the infector.
+The \textit{serial interval} has similar nature. It is 
+the time period between the onset symptoms of the infector 
+and onset symptoms noticed on the associated infectee.
 
-The picture also depicts two very commonly used terms
-are \textit{serial interval} and \textit{generation time}.
-\textit{Serial interval} is the time 
-period between the onset symptoms of the infector 
-(also known as \textit{primary case}) and onset symptoms noticed on the 
-associated infectee (also known as \textit{secondary case}). 
-In contrast, \textit{generation time} is the time period of 
-the infector being infected and the infectee being 
-infected by the infector.
+% $\phi_h$
 
-TG, also in the picture \ref{fig:zhao-transmissive-chain-example}, abbreviates 
-\textit{trasmission generation}, which is the time 
-period between the infectiousness of the infector 
-and the infectousness of the infectious, meaning 
-how many susceptibles can be infected from the 
-primary case until the associated secondary case can 
-be transmissibe as well.
+% $\phi_s$
+
+% $\phi_g$
+
+
+% TG, also in the picture \ref{fig:zhao-transmissive-chain-example}, abbreviates 
+% \textit{trasmission generation}, which is the time 
+% period between the infectiousness of the infector 
+% and the infectousness of the infectious, meaning 
+% how many susceptibles can be infected from the 
+% primary case until the associated secondary case can 
+% be transmissibe as well.
 
 TODO: symptomatic vs pre-symptomatic
-
-TODO: incidence and prevalence
 
 TODO: \textit{age of infection} is the time for how long the specific individual is infected.
 
@@ -327,6 +385,7 @@ For example \cite{knight2020} uses deconvolution of incubation
 period and serial interval to obtain generation time.
 
 
+
 \section{SIR model}
 
 This is one of the first model, proposed in 1927 by 
@@ -334,68 +393,70 @@ William Ogilvy Kermack and Anderson Gray McKendrick, and is
 usually used as an introductionary model to epidemic 
 modeling \cite{martcheva2015} due to its simplicity. 
 Often serves as a foundation for more complex 
-models (\cite{clancy2008} for example), TODO: used here for validation, therefore it deserves to be 
-mentioned.
+models (\cite{clancy2008} for example).
 
 The SIR model divides entire population into three disjunct 
 sets, called \textit{classes} or \textit{compatments} (hence the general 
-name \textit{compartment models} \cite{bacaer2011}) in epidemiology:
+name \textit{compartment models} \cite{bacaer2011}):
 
 \begin{itemize}
-  \item \textit{susceptibles (denoted $S$)} - set containing non-infected individuals, but with possibility to become infected.
-  \item \textit{infectious (denoted $I$)} - individuals who are infected and also able to infect susceptible individuals.
-  \item \textit{removed / recovered (denoted $R$)} - those who was restored from illnes (and gained immunity) or those who died. In both cases, they are removed from susceptibles and infectious sets and the do not play further role.
+  \item \textit{Susceptibles (size denoted $S$)} - set containing non-infected individuals, but with possibility to become infected.
+  \item \textit{Infectious (size denoted $I$)} - individuals who are infected and also able to infect susceptible individuals.
+  \item \textit{Removed (size denoted $R$)} - those who was restored from illnes (and gained immunity) or those who died. In both cases, they are removed from susceptibles and infectious sets and the do not play further role.
 \end{itemize}
 
 To define the SIR model, let us explain the \textit{force of infection} first.
-The force of infection, noted $\lambda(t)$, is similar to 
+The force of infection, noted $\lambda$, is similar to 
 potential energy in physics, in this case, it expresses 
 potential spreading force of the infectious compartment:
 
 \begin{equation}
-	\lambda(t) = \tau \cdot \bar{c} \cdot I
+	\lambda = \tau \rho I
 \end{equation}
 
-Where $\bar{c}$ is the average contact rate within whole 
+Where $\rho$ is the average contact rate of person within whole 
 population, no matter if they are susceptible, infectious 
-or removed. Therefore $\bar{c}N$ is the \textit{average number 
+or removed. Therefore $\rho N$ is the \textit{average number 
 of contacts per unit of time}.
-Assuming the susceptibles are independently and uniformly 
+Assuming the susceptibles are independently and identically 
 distributed, the probability of selecting any susceptible 
 in the population is equal to $\frac{S}{N}$.
-Therefore $\bar{c}N\frac{S}{N}$ is the number of contacts 
+Therefore $\rho N\frac{S}{N}$ is the number of contacts 
 each infected individual makes with susceptibles 
-(simplifies to $\bar{c}S$).
+(simplifies to $\rho S$).
 $\tau$ is the probability of becoming infectious for 
 susceptible, which met an infected individual:
 
 \begin{equation}
-	\tau = p \left( s_i~\textrm{is infected from}~i_j~|~s_i~\textrm{met}~i_j \right)
+	\tau = p \left( B~\textrm{is infected from}~A~|~B~\textrm{has contact with}~A \right)
 \end{equation}
 
 If the previous equations are combined together, 
-$\tau \bar{c} S$ can be assumed as the number of 
+$\tau \rho S$ can be assumed as the number of 
 susceptibles who became infectious after they have 
 met one infected individual per unit of time.
-Now the incidence may be formulated as multiplication 
-of the previous and number of infected individuals:
+Now the incidence may be formulated as:
 
 \begin{equation}
-	\Delta C = \tau \bar{c} I S = \lambda S
+	c = \tau \rho S I = \lambda S
 \end{equation}
 
-FIXME: Number of individuals who become infected per unit of 
-time is called \textit{incidence} \cite{martcheva2015}, denoted $\Delta C$ here:
+For practical usages denote $\tau \rho$ as $\beta$ 
+and substitute it into previous equation to get:
 
 \begin{equation}
-	\Delta C = -\frac{\partial{S}}{\partial{t}}
+	c = \beta S I
 \end{equation}
 
-For practical usages denote $\tau \bar{c}$ as $\beta$ 
-and substitute into equation:
+The compartment models are usually specified as a set of
+differential equations. Lets start with the susceptibles
+compartment $S$. In the basic SIR model, the $S$
+can be decresed only (as it assumes the everyone can be 
+infected only once).
+This decrease is equal to the incidence, hence:
 
 \begin{equation}
-	\frac{\partial{S}}{\partial{t}} = -\beta S I
+	\frac{\partial{S}}{\partial{t}} = -c = -\beta S I
 \end{equation}
 
 The first differential equation for the SIR model has 
@@ -416,7 +477,7 @@ the $I$ compartment is caught in equation:
 \end{equation}
 
 Finally, the decreased proportion $\gamma I$ from the 
-$I$ compartment increases recovered/removed compartment $R$:
+$I$ compartment increases removed compartment $R$:
 
 \begin{equation}
 	\frac{\partial{R}}{\partial{t}} = \gamma I
@@ -435,27 +496,31 @@ This model has several assumptions:
     \end{equation}
   \item When susceptible gets infected, it also becomes infectious
   \item Each susceptible has equal probability to become infectious
+  \item Everyone can be infected only once in his lifetime
   \item Each infected individual is equally infective \cite{volz2018}
 \end{enumerate}
+
+
 
 \section{Reproduction number}
 
 The \textit{basic reproduction number} $\mathcal{R}_0$ is number 
 of secondary cases caused by the one infectious individual 
-in the completely susceptible population \cite{jones2007}:
+in the completely susceptible population and can be expressed
+as the following proportion \cite{jones2007}:
 
 \begin{equation}
 	\mathcal{R}_0 \propto \left(\frac{infection}{contact}\right)\cdot\left(\frac{contact}{time}\right)\cdot\left(\frac{time}{infection}\right)  
 \end{equation}
 
-In terms of SIR model, the following formula can be derived:
+In terms of SIR model defined above, and the fact $\gamma^{-1}$ is 
+the average time of infection, the following formula can be derived:
 
 \begin{equation}
-	\mathcal{R}_0 = \tau\bar{c}d = \frac{\beta}{\gamma}
+	\mathcal{R}_0 = \tau \rho d = \frac{\beta}{\gamma}
 \end{equation}
 
-Note the dimensionlessness of the $\mathcal{R}_0$, therefore 
-it cannot be considered as a rate.
+Note the dimensionlessness of the $\mathcal{R}_0$.
 
 The \textit{effective reproduction number} $\mathcal{R}_e$ 
 ($\mathcal{R}_{\text{t}}$, $\mathcal{R}_{\text{eff}}$ in 
@@ -467,8 +532,17 @@ conditions of time $t$ in the ongoing epidemic \cite{chowell2016}:
 	\mathcal{R}_e(t) = \mathcal{R}_0 \frac{S(t)}{N} = \frac{\beta}{\gamma} \frac{S(t)}{N}
 \end{equation}
 
-\section{The exponential growth model}
+The basic reproduction number $\mathcal{R}_0$ is usually used
+in the early epidemic phase to determine transmission potential.
+When infection is
+spreading through a population, it is often more convenient
+to work with the effective reproduction number $\mathcal{R}_e(t)$.
 
+\section{The Wallinga \& Lipsitch model}
+
+Wallinga and Lipsitch \cite{wallinga2007} developed a non-parametric
+model (shortened as WL model here) to infer effective reproduction
+number $\mathcal{R}_e$ just from the exponential growth.
 
 
 \section{The Fraser model}
@@ -479,8 +553,8 @@ The \cite{fraser2007} proposes model where the effective
 reproduction number $\mathcal{R}_t$ is computed from the 
 daily incidence data and generation time only.
 The main idea in this model is the number of newly infected 
-individuals $\Delta C(t)$ in time $t$ is proportional to 
-previous prevalent cases $\Delta C(t - \tau)$, where 
+individuals $c(t)$ in time $t$ is proportional to 
+previous prevalent cases $c(t - \tau)$, where 
 $\tau > 0$ denotes infection age, and the transmissibility 
 $A(t, \tau)$. The infection age describes how long ago 
 the particular infection was established in the specific 
@@ -496,7 +570,7 @@ Then we can use the convolution over previous cases
 and transmissibility to obtain the expected incidence:
 
 \begin{equation}
-\Delta C( t ) = \int^{\infty}_0 A ( t, \tau ) \Delta C ( t - \tau ) d\tau
+c( t ) = \int^{\infty}_0 A ( t, \tau ) c ( t - \tau ) d\tau
 \end{equation}
 
 For practical purposes, it is convenient to bound $\tau$ 
@@ -538,8 +612,8 @@ Putting it to the renewal equation the following is obtained:
 
 \begin{equation}
   \begin{split}
-    \Delta C(t) & = \int^{\infty}_0 \mathcal{R}(t) w(\tau) \Delta C(t - \tau) d\tau \\
-    & = \mathcal{R}(t) \int^{\infty}_0 w(\tau) \Delta C(t - \tau) d\tau\\
+    c(t) & = \int^{\infty}_0 \mathcal{R}(t) w(\tau) c(t - \tau) d\tau \\
+    & = \mathcal{R}(t) \int^{\infty}_0 w(\tau) c(t - \tau) d\tau\\
     & = \mathcal{R}(t) \Lambda(t)    
   \end{split}
 \end{equation}
@@ -552,7 +626,7 @@ infectious age to be $\tau_m$, and also because of discrete
 observations:
 
 \begin{equation}
-\Delta C_t = \mathcal{R}_e \Lambda_t = \mathcal{R}_e \sum^{\tau_m}_{\tau=0} w(\tau) \Delta C(t - \tau)
+c_t = \mathcal{R}_e \Lambda_t = \mathcal{R}_e \sum^{\tau_m}_{\tau=0} w(\tau) \Delta C(t - \tau)
 \end{equation}
 
 For the sake of simplicity, 
@@ -583,6 +657,7 @@ TODO: tune up this chapter!
 TODO:
 
 
+
 \chapter{The situation analysis}
 
 The purpose of this chapter is to better understand the situation 
@@ -608,6 +683,7 @@ serial interval.
 The incidence data itself corresponds to the geographical 
 segment of interest which is often part of official reports, 
 but serial interval is usually not.
+
 
 \section{Serial interval}
 
@@ -636,27 +712,30 @@ $w \sim LogNormal \left( \mu = 4.7, \sigma = 2.9 \right)$.
   \begin{center}
     \includegraphics[width=\textwidth]{images/serial-intervals-overview.png}
   \end{center}
-  \caption{Mentioned serial intervals}
+  \caption{Referenced serial intervals}
   \label{fig:serial-intervals-overview}
 \end{figure}
 
 The previous serial intervals vary due to spatial and 
-temporal differences in population composition. 
-This is not suitable for Czech republic. 
-The National Institute of Public Health (NIPH) 
-\footnote{http://www.szu.cz/tema/prevence/chripka-versus-koronavirus-podobnosti-a-zasadni-rozdily-k-18} 
-compares Covid-19 to Flu, where Flu has average SI 3 days, 
-Covid-19 5-6 days. From the local research made by \cite{majek2020}, 
-he claims the estimation of SI in Czech republic 4-5 days is 
+temporal differences in population composition and the
+strain of the virus.
+Those are not suitable for Czech republic. 
+The \textit{National Institute of Public Health} (NIPH)  
+compared Covid-19 to flu\footnote{\url{http://www.szu.cz/tema/prevence/chripka-versus-koronavirus-podobnosti-a-zasadni-rozdily-k-18}}, 
+where flu has average SI 3 days, 
+Covid-19 5-6 days, moreover, the mortality is 30-40x higher.
+From the local research made by \cite{majek2020}, 
+it is estimated the SI of Covid-19 for Czech republic is 4-5 days, which is 
 consistent with \cite{nishiura2020}. 
 In the time of writing this thesis, more precise work on the 
 SI of predominant delta mutation could not be found. 
 Therefore we will stick with \cite{majek2020} and 
 \cite{nishiura2020} and assume 
-$w \sim LogNormal \left( \mu = 4.7, \sigma = 2.9 \right)$. 
-Moreover, according the chart above, we can limit the the 
-infection age $\tau < \tau_m = 15$ days.
+$w \sim LogNormal \left( \mu = 4.7, \sigma = 2.9 \right)$ 
+as the source of truth. 
 
+According the chart above, we can put upper limit of the 
+infection age $\tau_m$ to $15$ days.
 
 \section{Available data}
 
@@ -664,11 +743,9 @@ In general, the model is strong as the input data provided.
 For epidemic modelling purposes, the most relevant data 
 assumed comes from the official authorities.
 For the Czech republic, there is a Covid-19 reporting web 
-portal \footnote{https://onemocneni-aktualne.mzcr.cz/} operated 
-by the Ministry of Healthcare and developed by IHIS CR 
-\footnote{Institute of Health Information and Statistics of the Czech Republic, https://www.uzis.cz/} 
-and IBA LF MU 
-\footnote{Institute of Biostatistics and Analyses at the Faculty of Medicine of the Masaryk University, http://www.iba.muni.cz/}, 
+portal\footnote{\url{https://onemocneni-aktualne.mzcr.cz/}} operated 
+by the Ministry of Healthcare and developed by IHIS CR\footnote{Institute of Health Information and Statistics of the Czech Republic, \url{https://www.uzis.cz/}} 
+and IBA LF MU\footnote{Institute of Biostatistics and Analyses at the Faculty of Medicine of the Masaryk University, \url{http://www.iba.muni.cz/}}, 
 stating National Health Information System (NHIS), Regional Public 
 Health Authorities (RPHAs) and Ministry of Healthcare as its 
 data source. 
@@ -683,9 +760,9 @@ In the Czechia, there is 76 districts and the capital city Prague.
 Each district (and Prague) can be uniquely identified by its 
 Local administrative unit (LAU) code. 
 This will allow us to map it with the official population 
-statistics from the \footnote{https://www.czso.cz/csu/czso/pocet-obyvatel-v-obcich-k-112021}.
+statistics\footnote{\url{https://www.czso.cz/csu/czso/pocet-obyvatel-v-obcich-k-112021}}.
 
-The obtained incidence $\Delta C$ for the three largest 
+The observed incidence $Y$ for the three largest 
 cities in Czechia, namingly Prague, Brno and Ostrava, looks as 
 follows:
 
@@ -703,13 +780,13 @@ follows:
 From the previous plot, it is obvious the data are overloaded 
 with noise. 
 In the detail view, the weekly seasonal pattern can be observed. 
-In the epidemiology, according to \cite{liu2021} \cite{annunziato2020}, 
+In the epidemiology, according to \cite{liu2021} and \cite{annunziato2020}, 
 those oscillations may be associated to the different capacities 
 of testing and reporting delays due to weekends. 
 We will assume, this also applies for the Czechia's case of 
-Covid-19 reporting, as [Komenda, 2020] and corresponding web 
-application describe the methods how the data used in this 
-thesis are collected and processed.
+Covid-19 reporting, as \cite{komenda2020} and corresponding web 
+application authors describe the methods how the data are
+collected and processed.
 
 \subsection{Stationarity verification}
 
@@ -722,10 +799,6 @@ If the unit root is present, the sample is non-stationary.
 Alternative hypothesis is, therefore, the stationarity of 
 the given sample.
 
-% \input{tables/test}
-
-% TODO: adf table
-
 \input{tables/adf_test_prague}
 
 In general, p-value is the probability that test statistic 
@@ -734,15 +807,15 @@ than unknown distribution of the sample, assuming null
 hypothesis to be true. In simple words, it is the strength 
 of belief in the null hypothesis, that the sample is 
 non-stationary. 
-As that value of p-value $\sim 9.8 \%$, we fail to reject 
+As that value of p-value is higher than $5\%$, we fail to reject 
 the null hypothesis, arguing the observed incidence 
 $\Delta C_{\text{Prague}}$ was generated by a non-stationary 
 process. 
-Of course, the ADF test can be done for $\Delta C_{\text{Brno}}$ 
-and $\Delta C_{\text{Ostrava}}$ samples as well. 
-We find out the similar results:
-
-TODO: adf tables
+Of course, the ADF test should be done for $\Delta C_{\text{Brno}}$ 
+and $\Delta C_{\text{Ostrava}}$ samples as well, 
+see tables \ref{tab:adf-test-brno}, \ref{tab:adf-test-ostrava}.
+The results found have the similar nature, i.e.
+the time series are non-stationary.
 
 \subsection{Seasonality decomposition}
 
@@ -821,7 +894,8 @@ To overcome previous issues, the thesis offers the robust
 probabilistic solution.
 
 
-\chapter{The methodology and solution}
+
+\chapter{The incidence model}
 
 In the most basic taxonomy of mathematical models, they can be 
 split into two main categories: \textit{deterministic} and 
@@ -917,14 +991,14 @@ Choosing the proper solving method depends on the
 defined model, so let's start with the model first.
 
 
-\section{The probabilistic model of the incidence}
+\section{The probabilistic model}
 
 \subsection{Likelihood}
 
 As the daily incidence is discrete count variable, 
 therefore the discrete probabilistic distributions are 
 considerable as a likelihood. One of the first suggestions 
-might be the *Poisson* distribution. Unfortunatelly, random 
+might be the \textit{Poisson} distribution. Unfortunatelly, random 
 variable $X$ following the Poisson distribution with 
 parameter $\lambda$ has very strong assumption 
 $\lambda = \mathbb{E}\left[ X \right] = \mathbb{V}\left[ X \right]$, 
@@ -940,7 +1014,7 @@ as \cite{simone2020}, \cite{wallinga2004},
 The following will be our desirable likelihood:
 
 \begin{equation}
-\Delta C \sim NegBin\left( \mu, \alpha \right)
+c \sim NegBin\left( \mu, \alpha \right)
 \end{equation}
 
 Usually, the negative binomial distribution is 
@@ -971,7 +1045,7 @@ $\alpha = r$ is assumed exponentially distributed:
 TODO: fix notation
 
 \begin{equation}
-p(x|\Delta C) \propto p(\Delta C|\alpha, \theta) p(\alpha) p(\theta)
+p(\hat{c}|y) \propto p(y|\alpha, \theta, a, b) p(\alpha) p(\theta) p(a) p(b)
 \end{equation}
 
 As the previous analysis shown significant 
@@ -990,7 +1064,7 @@ before and after the logarithmic transformation:
 \end{figure}
 
 
-\subsection{The analysis of theta}
+\subsection{The analysis of \texorpdfstring{$\theta$}{Lg}}
 
 After the transformation, $\theta$ is no 
 longer discrete random variable, rather 
@@ -1093,9 +1167,9 @@ normality tests. For the purpose of normality
 testing, Kolmogorov-Smirnov, Lilliefors and 
 Shapiro-Wilk tests were performed.
 
-TODO: sample tests
-
-
+\input{tables/theta-diff-ks-test}
+\input{tables/theta-diff-lilliefors-test}
+\input{tables/theta-diff-shapiro-wilk-test}
 
 The strongest result is noted in the 
 Lilliefors test, then Shapiro-Wilk test and 
@@ -1129,7 +1203,9 @@ Therefore we can model prior for $\theta$ as a
 \theta \sim GP \left( m \left( x \right), k \left( x, x' \right) \right)
 \end{equation}
 
-\subsection{The theta as a Gaussian process}
+
+
+\subsection{The \texorpdfstring{$\theta$}{Lg} as a Gaussian process}
 
 Generally speaking, Gaussian process 
 \cite{rasmussen2004} is a finite set of random 
@@ -1142,7 +1218,7 @@ distribution defined as:
 X \sim MN \left( m \left( x \right), k \left( x, x' \right) \right)
 \end{equation}
 
-where $m$ is the *mean function* and $k$ is the 
+where $m$ is the \textit{mean function} and $k$ is the 
 \textit{kernel function}. 
 The mean function 
 $m : \mathcal{X} \to \mathcal{R}$ captures the 
@@ -1190,7 +1266,7 @@ TODO: properties of this kernel and reason why it is used here
 Simulation itself is relatively old technique for 
 solving analytically intractable problems. 
 The first such a problem considered is the 
-\textit{Buffon's Needle problem} from 1733. 
+\textit{Buffon's needle problem}\footnote{\url{https://en.wikipedia.org/wiki/Buffon\%27s_needle_problem}} from 1733. 
 The probem is defined as probability of the 
 needle of length $l$ dropped onto the floor 
 represented by parallel strips of distance 
@@ -1215,7 +1291,7 @@ further.
 In fact, the name Monte Carlo refers to the city 
 in Monaco, which is famous for its casinos. 
 In the casinos, generally, the probability and 
-randomness play big roles, just like in the 
+randomness together plays big role, just like in the 
 Monte Carlo simulation.
 
 Monte Carlo methods can be used for various 
@@ -1333,12 +1409,31 @@ which affects the speed of convergence -
 more accurate the prior is, the faster the 
 convergence.
 
+In the step 2, the parameter proposal $\theta^\prime$ 
+is being generated, where, in the step 3, is used 
+to compute acceptance probability $\alpha$:
+
+\begin{equation}\label{eq:metropolis-alpha}
+  \alpha = min\left(1, \frac{f(\theta^\prime)}{f(\theta_{i-1})}\right)
+\end{equation}
+
+This probability is then compared with uniformly generated number in
+the interval $(0, 1]$ to decide whether accept the 
+sample or not. This may look a little bit cumbersome, 
+when we may accept parameter $\theta^\prime$ with 
+lower probability than $\theta_{i-1}$, but the 
+whole idea of acceptance probability is to let 
+explore further areas of state space to prevent 
+stuck in local minimum, however, the areas with 
+higher probability are still prefered.
+
+
 Input: initial state $\theta_0$
 
 \begin{enumerate}
   \item Set $i \leftarrow 1$
   \item Generate proposal $\theta^\prime \sim g(\cdot | \theta_{i-1})$
-  \item Compute acceptance probability $\alpha = min\left(1, \frac{f(\theta^\prime)}{f(\theta_{i-1})}\right)$
+  \item Compute acceptance probability $\alpha$ according to \eqref{eq:metropolis-alpha}
   \item Generate $u \sim \text{Uniform}(0, 1)$
   \item Set $\theta_{i} \leftarrow \begin{cases}
     \theta^\prime, & \text{ if } u \leq \alpha,\\
@@ -1348,18 +1443,6 @@ Input: initial state $\theta_0$
   \item Set $i \leftarrow i + 1$ and go to step 2
 \end{enumerate}
 
-In the step 2, the parameter proposal $\theta^\prime$ 
-is being generated, where, in the step 3, is used 
-to compute acceptance probability. This probability 
-is then compared with uniformly generated number in
-the interval $(0, 1]$ to decide whether accept the 
-sample or not. This may look a little bit cumbersome, 
-when we may accept parameter $\theta^\prime$ with 
-lower probability than $\theta_{i-1}$, but the 
-whole idea of acceptance probability is to let 
-explore further areas of state space to prevent 
-stuck in local minimum, however, the areas with 
-higher probability are still prefered.
 
 After the sufficient amount of steps, the Markov 
 chain should approximate the stationary target 
@@ -1403,21 +1486,77 @@ which utilized Monte Carlo to understand the structure
 of atoms. 
 The Radford Neal laterly recognized the potential of 
 this method during his focus on Bayesian neural networks 
-within his doctoral thesis \cite{neil1995}. 
+within his doctoral thesis \cite{neal1995}. 
 After a few years, it was referenced by some literature, 
-until the review of Neal again \cite{neil2011} and availability 
+until the review of Neal again \cite{neal2011} and availability 
 of high performance software to such a computation.
 
-Kinetic energy:
+In Hamiltonian dynamics, state is characterized by the
+\textit{position vector} $q$ and the \textit{momentum vector} $q$,
+both are $d$-dimensional, hence $2d$-dimensional state.
+We usually describe this system by the function of
+this state $H(q, p)$, called \textit{Hamiltonian}.
+
+Hamilton’s equations describe how $q$ and
+$p$ change in time $t$ by the partial derivatives \cite{neal2011}:
 
 \begin{equation}
-E_k = \frac{p}{2mass}
+  \frac{\partial q_i}{\partial t} = \frac{\partial H}{\partial p_i}
 \end{equation}
 
 \begin{equation}
-E(\theta, m) = u(\theta) + k(m) = const.
+  \frac{\partial p_i}{\partial t} = - \frac{\partial H}{\partial q_i}
 \end{equation}
 
+The Hamiltonian $H$ can be tought as a total energy in the system,
+i.e. sum of \textit{kinetic energy} $K$ and \textit{potential energy} $U$:
+
+\begin{equation}
+  H(q, p) = U(q) + K(p)
+\end{equation}
+
+The $U$ is assumed as log probability density of the distribution
+of position vector $q$ we want to sample from.
+
+Kinetic energy $K$ is assumed as to be $p^\intercal M^{-1} p$, 
+where $M$ is mass matrix, which is diagonal, i.e. with
+diagonal elements $2m_1, ..., 2m_d$, therefore the computation of $K$
+can be simplified:
+
+\begin{equation}
+  K(p) = \sum_{i=1}^{d} \frac{p_i^2}{2 m_i}
+\end{equation}
+
+TODO: Euler integration
+
+The leapfrog integration:
+
+\begin{equation}
+  p_i \left(t + \frac{\epsilon}{2} \right) = p_i(t) - \frac{\epsilon}{2} \frac{\partial U}{\partial q_i} (q(t))
+\end{equation}
+
+\begin{equation}
+  q_i(t + \epsilon) = q_i(t) + \epsilon \frac{p_i \left(t + \frac{\epsilon}{2} \right)}{m_i}
+\end{equation}
+
+\begin{equation}
+  p_i(t + \epsilon) = p_i \left( t + \frac{\epsilon}{2} \right) - \frac{\epsilon}{2} \frac{\partial U}{\partial q_i} \left( q \left( t + \epsilon \right) \right)
+\end{equation}
+
+From the perspective of statistical mechanics, the $H$ can be seen
+as a joint probability distribution
+
+\begin{equation}
+  P(x) = \frac{1}{Z} exp \left( \frac{-E(x)}{T} \right)
+\end{equation}
+
+\begin{equation}
+  P(q, p) = \frac{1}{Z} exp \left( \frac{-H(q, p)}{T} \right)
+\end{equation}
+
+\begin{equation}
+  P(q, p) = \frac{1}{Z} exp \left( \frac{-U(q)}{T} \right) exp \left( \frac{-K(p)}{T} \right)
+\end{equation}
 
 \subsection{No U-Turn Sampler}
 
@@ -1441,6 +1580,220 @@ The MCMC includes Metropolis–Hastings (which is its default
 engine for discrete variables), HMC and NUTS sampler (default 
 for continuous variables)
 
+
+\section{The inference of incidence}
+
+Let us recall the chosen probabilistic mode of incidence.
+The likelihood is given by the \textit{negative binomial distribution}:
+
+\begin{equation}
+  c \sim NegBin(\mu=exp(\theta), \alpha)
+\end{equation}
+
+\begin{equation}
+  \alpha \sim Exponential(\lambda_\alpha)
+\end{equation}
+
+\begin{equation}
+  \theta \sim GP(m=b + ax, k=\eta^2 k)
+\end{equation}
+
+\begin{equation}
+  a \sim N(\mu_a, \sigma_a)
+\end{equation}
+
+\begin{equation}
+  b \sim N(\mu_b, \sigma_b)
+\end{equation}
+
+Priors are chosen:
+
+\begin{equation}
+  blah blah
+\end{equation}
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=8cm]{images/inc-model-graphviz.png}
+  \end{center}
+  \caption{Internal PyMC3 DAG representation of our incidence model}
+  \label{fig:inc-model-graphviz}
+\end{figure}
+
+To approximate incidence properly, we need to tune up model for
+as much specific cases as possible. Ideally, we should try to approximate
+whole incidence upon all the data, however, it will be very laborious.
+Instead of that, we can grab few samples again. Those samples should
+represent both regular cases and also edge cases.
+For this reason, we pick the following samples for incidence validation:
+
+\begin{enumerate}
+  \item noisy incidence (\ref{fig:dev-incidence-1})
+  \item low (almost zero) incidence (\ref{fig:dev-incidence-2})
+  \item regular growing incidence (\ref{fig:dev-incidence-3})
+\end{enumerate}
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=10cm]{images/theta-posterior-1.png}
+  \end{center}
+  \caption{Posterior of $\theta$ for sample 1}
+  \label{fig:theta-posterior-1}
+\end{figure}
+
+% \begin{figure}
+%   \begin{minipage}{.5\textwidth}
+%     \includegraphics{images/incidence-posterior-predictive-1.png}
+%    \caption{Sample 1}
+%   \end{minipage}
+%   \begin{minipage}{.5\textwidth}
+%     \includegraphics{images/incidence-posterior-predictive-2.png}
+%    \caption{Sample 2}
+%   \end{minipage}
+%  \end{figure}
+
+% \begin{figure}[h]
+%   \subfigure[Sample 1]{\includegraphics[width=10cm]{images/incidence-posterior-predictive-1.png}\label{fig:incidence-posterior-1}}
+%   \subfigure[Sample 2]{\includegraphics[width=10cm]{images/incidence-posterior-predictive-2.png}\label{fig:incidence-posterior-2}}
+%   \caption{main caption}\label{main_label}
+% \end{figure}
+
+% \begin{figure}[h]
+%   \centering
+%   % \begin{center}
+%     \includegraphics[width=10cm]{images/incidence-posterior-predictive-1.png}
+%     \caption{Posterior predictive of TODO: incidence for sample 1}
+%     \label{fig:incidence-posterior-1}
+%   % \end{center}
+
+%   % \begin{center}
+%     \includegraphics[width=10cm]{images/incidence-posterior-predictive-2.png}
+%     % \caption{Posterior predictive of TODO: incidence for sample 2}
+%     \label{fig:incidence-posterior-2}
+%   % \end{center}
+
+%   % \begin{center}
+%     \includegraphics[width=10cm]{images/incidence-posterior-predictive-3.png}
+%     % \caption{Posterior predictive of TODO: incidence for sample 3}
+%     \label{fig:incidence-posterior-3}
+%   % \end{center}
+% \end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=10cm]{images/incidence-posterior-predictive-1.png}
+  \caption{Posterior predictive of $\hat{c}$ for sample 1}
+  \label{fig:incidence-posterior-1}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=10cm]{images/incidence-posterior-predictive-2.png}
+  \caption{Posterior predictive of $\hat{c}$ for sample 2}
+  \label{fig:incidence-posterior-2}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=10cm]{images/incidence-posterior-predictive-3.png}
+  \caption{Posterior predictive of $\hat{c}$ for sample 3}
+  \label{fig:incidence-posterior-3}
+\end{figure}
+
+
+\chapter{The risk model}
+
+For the next steps, we will switch back to the deterministic 
+world, at least, in terms of computation, to retain simplicity of our model.
+
+\section{Prevalence estimation}
+
+\section{Validation}
+
+In the previous chapter, we established the probabilistic
+incidence inference model capable of fit very noisy observations.
+Now we have to employ previously established epimiological theory
+to utilize inferred incidence to compute the risk.
+In this case, the best way could be to generate artificial data
+with a model of known parameters, which we can laterly try to
+infer and compare.
+For this purposes, we will use SIR model, which is simple 
+but powerful in parametrization.
+What we are going to generate is daily incidence, so recall 
+the incidence equation for SIR model (TODO: discretization):
+
+\begin{equation}
+  \label{eq:risk-model-incidence}
+  c = \beta_t I_{t-1} \frac{S_{t-1}}{N}
+\end{equation}
+
+The one parameter, we could compute after the inference, 
+is the $\mathcal{R}_e$, therefore, we can parametrize 
+the generation of artificial data with $\mathcal{R}_e$, which
+is defined for SIR model as (TODO: recalling):
+
+\begin{equation}\label{eq:risk-model-rt}
+\mathcal{R}_{et} = \mathcal{R}_0 \frac{S_{t-1}}{N} = \frac{\beta_t}{\gamma_t} \frac{S_{t-1}}{N}
+\end{equation}
+
+From previous equation we can express $\beta_t$:
+\begin{equation}
+\beta_t = \frac{\gamma_t N \mathcal{R}_{et}}{S_{t-1}}
+\end{equation}
+
+Substituting into incidence equation \eqref{eq:risk-model-incidence} we get:
+\begin{equation}
+  c = \gamma_t \mathcal{R}_{et} I_{t-1}
+\end{equation}
+
+The only thing remains is to solve $\gamma_t$, this is usually given as:
+
+\begin{equation}
+  \gamma_t = \frac{1}{w}
+\end{equation}
+
+where $w$ is the mean serial interval. In our case, $w$ is a vector, therefore:
+
+\begin{equation}
+  \gamma_t = \frac{1}{\mathbb{E}[w]}
+\end{equation}
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=11cm]{images/risk-model-fake-rt.png}
+  \end{center}
+  \caption{Generated $\mathcal{R}_{e}$}
+  \label{fig:risk-model-fake-rt}
+\end{figure}
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=11cm]{images/risk-model-fake-sir.png}
+  \end{center}
+  \caption{Generated SIR data}
+  \label{fig:risk-model-fake-sir}
+\end{figure}
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=11cm]{images/risk-model-fake-incidence.png}
+  \end{center}
+  \caption{Generated incidence}
+  \label{fig:risk-model-fake-incidence}
+\end{figure}
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=11cm]{images/risk-model-incidence-posterior-predictive.png}
+  \end{center}
+  \caption{Posterior TODO:}
+  \label{fig:risk-model-fake-incidence}
+\end{figure}
+
+
+\chapter{Conclusion}
+
+
 \cite{blei2018}
 
 
@@ -1451,5 +1804,55 @@ for continuous variables)
 \cite{davidson-pilon2015}
 
 
-\printbibliography
+\printbibliography[heading=bibintoc]
+
+\appendix
+
+\chapter{An appendix}
+
+\input{tables/adf-test-brno}
+\input{tables/adf-test-ostrava}
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=\textwidth]{images/dev-incidence-1.png}
+  \end{center}
+  \caption{Sample 1 for the incidence inference tuning}
+  \label{fig:dev-incidence-1}
+\end{figure}
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=\textwidth]{images/dev-incidence-2.png}
+  \end{center}
+  \caption{Sample 2 for the incidence inference tuning}
+  \label{fig:dev-incidence-2}
+\end{figure}
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=\textwidth]{images/dev-incidence-3.png}
+  \end{center}
+  \caption{Sample 3 for the incidence inference tuning}
+  \label{fig:dev-incidence-3}
+\end{figure}
+
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=\textwidth]{images/theta-posterior-2.png}
+  \end{center}
+  \caption{Posterior of $\theta$ for sample 2}
+  \label{fig:theta-posterior-2}
+\end{figure}
+
+\begin{figure}[h]
+  \begin{center}
+    \includegraphics[width=\textwidth]{images/theta-posterior-3.png}
+  \end{center}
+  \caption{Posterior of $\theta$ for sample 3}
+  \label{fig:theta-posterior-3}
+\end{figure}
+
+
 \end{document}
