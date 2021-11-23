@@ -101,6 +101,7 @@
   commentstyle    = \itshape\color{magenta},
   breaklines      = true,
 }
+\renewcommand{\lstlistingname}{Snippet}
 \usepackage{floatrow} %% Putting captions above tables
 \floatsetup[table]{capposition=top}
 \usepackage[babel]{csquotes} %% Context-sensitive quotation marks
@@ -264,8 +265,6 @@ of $\mathcal{R}_0$ to reveal severity of that disease.
 Later then, it helps with decision 
 making during the pandemic state, keeping population safe 
 according to health, economy and social amenities.
-  
-
 
 \section{History of mathematical modelling in the epidemiology}
 
@@ -281,7 +280,7 @@ the early twentieth century \cite[Chapter~1.4]{martcheva2015}.
 William Hamer was the first who used the law of 
 mass action for modelling recurrence of measles. 
 Sir Ronald Ross is considered to be the founder of 
-modern mathematical epidemiology due to his controbution
+modern mathematical epidemiology due to his contribution
 to mathematical modelling of malaria
 transmission. He derived a threshold quantity, which is 
 nowadays known as a \textit{basic reproduction number}
@@ -302,7 +301,7 @@ and \textit{recovery} in the bathtub analogy:
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=6cm]{static/epidemiologists-bathtub.png}
+    \includegraphics[width=6cm]{static/images/epidemiologists-bathtub.png}
   \end{center}
   \caption{The "epidemiologist's bathtub" \cite{arnold2020}}
   \label{fig:epidemiologists-bathtub}
@@ -330,7 +329,7 @@ This abstraction allows to specify several important time intervals.
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=11cm]{static/zhao2020_terms.png}
+    \includegraphics[width=11cm]{static/images/zhao2020_terms.png}
   \end{center}
   \caption{The demonstrative timeline of a transmission chain for a pair of infector and infectee \cite{zhao2020}}
   \label{fig:zhao-transmissive-chain-example}
@@ -368,7 +367,7 @@ TODO: symptomatic vs pre-symptomatic
 TODO: \textit{age of infection} is the time for how long the specific individual is infected.
 
 \begin{figure}[h]
-  \includegraphics[width=\textwidth]{images/nishiura2020_terms.png}
+  \includegraphics[width=10cm]{static/images/nishiura2020_terms.png}
   \caption{The relationship between the incubation period and serial interval. \cite{nishiura2020}}
   \label{fig:nishiura-transmission}
 \end{figure}
@@ -538,20 +537,106 @@ When infection is
 spreading through a population, it is often more convenient
 to work with the effective reproduction number $\mathcal{R}_e(t)$.
 
-\section{The Wallinga \& Lipsitch model}
+\section{Exponential growth model}
+
+The severity of epidemic spread can be estimated also by the
+\textit{exponential growth rate} $r$. If $r > 0$ the epidemic is growing,
+if $r = 0$, then epidemic holds constant incidence, and finally, 
+when $r < 0$ the epidemic is weakening in its spread.
+In the case of SIR model, the $r$ can be expressed as \cite{ma2019}:
+
+\begin{equation}
+  r = \beta - \gamma
+\end{equation}
+
+FIXME: From the epidemiological perspective, we can 
+
+\begin{equation}
+  I(t) = I_0 e^{rt}
+\end{equation}
+
+\section{Wallinga \& Lipsitch model}
 
 Wallinga and Lipsitch \cite{wallinga2007} developed a non-parametric
-model (shortened as WL model here) to infer effective reproduction
-number $\mathcal{R}_e$ just from the exponential growth.
+model (shortened as \textit{WL model} here), which is able to infer
+the basic reproduction number from the \textit{exponential growth rate} $r$.
 
+This model is based on the exponential growth model described earlier and
+Euler-Lotka equation\footnote{\url{https://en.wikipedia.org/wiki/Euler\%E2\%80\%93Lotka_equation}},
+which was originally used to model population dynamics.
+Let the $b(t)$ be number of female births in the time $t$, $a$ is 
+age of the mother (assuming population has sufficient 
+number of males to ensure reproduction, therefore we do not 
+count them in), and $n(a)$ is the rate of production of female offsprings 
+by one mother at her age $a$. Then we have this equation (which is 
+special type of renewal equation \cite{feller1941}):
 
-\section{The Fraser model}
+\begin{equation}
+  b(t) = \int_{0}^{\infty} b(t - a) n(a) da
+\end{equation}
 
-TODO: prepsat podle \cite{ma2019}
+If we sum up the $n(a)$ in the equation, we obtain \textit{reproductive number} 
+$\mathcal{R}$ expressing the total number of female offsprings from one mother:
+
+\begin{equation}\label{eq:wl-model-R}
+  \mathcal{R} = \int_0^{\infty} n(a) da
+\end{equation}
+
+As the $b(t)$ is assumed to follow exponential growth model, then 
+the $b$ functions can be assumed $b(t) = Q e^{rt}$ and 
+$b(t - a) = Q e^{r(t - a)} = Q e^{rt} e^{-ra}$, therefore the
+previous equation may be rewritten to:
+
+\begin{equation}
+  Q e^{rt} = \int_{0}^{\infty} Q e^{rt} e^{-ra} n(a) da
+\end{equation}
+
+Note the $Q e^{rt}$ on both sides. At the side of integral and 
+as this expression is independent of $a$, i.e., constant, we can 
+divide both sides by this constant to obtain Euler-Lotka
+equation (in the original equation $n(a) = l(a) m(a)$, but 
+here is intentional simplification):
+
+\begin{equation}\label{eq:wl-model-euler-lotka}
+  1 = \int_{0}^{\infty} e^{-ra} n(a) da
+\end{equation}
+
+To incorporate $\mathcal{R}$ we can normalize the $n(a)$, in the
+previous equation, by the equation \eqref{eq:wl-model-R} to get
+normalized distribution $\omega(a)$:
+
+\begin{equation}
+  \omega(a) = \frac{n(a)}{\int_0^{\infty} n(a) da} = \frac{n(a)}{\mathcal{R}}
+\end{equation}
+
+Let the previous be employed in the equation \eqref{eq:wl-model-euler-lotka}:
+
+\begin{equation}\label{eq:wl-model-euler-lotka-R}
+  \frac{1}{\mathcal{R}} = \int_{0}^{\infty} e^{-ra} \frac{n(a)}{\mathcal{R}} da = \int_{0}^{\infty} e^{-ra} \omega(a) da
+\end{equation}
+
+Finally, we can obtain the formula for computation reproductive number
+$\mathcal{R}$ from the exponential growth $r$ and reproduction profile $\omega$:
+
+\begin{equation}\label{eq:wl-model-euler-lotka-R-final}
+  \mathcal{R} = \frac{1}{\int_{0}^{\infty} e^{-ra} \omega(a) da}
+\end{equation}
+
+In this case $\omega$ fulfills the definition of probability density
+(sums up to 1). In the case of epidemiology, $\omega$ represents
+distribution of \textit{generation time} defined earlier.
+$\mathcal{R}$
+
+\section{Fraser model}
 
 The \cite{fraser2007} proposes model where the effective 
 reproduction number $\mathcal{R}_t$ is computed from the 
 daily incidence data and generation time only.
+
+The approach of Fraser is very related to WL
+model.
+
+
 The main idea in this model is the number of newly infected 
 individuals $c(t)$ in time $t$ is proportional to 
 previous prevalent cases $c(t - \tau)$, where 
@@ -626,7 +711,7 @@ infectious age to be $\tau_m$, and also because of discrete
 observations:
 
 \begin{equation}
-c_t = \mathcal{R}_e \Lambda_t = \mathcal{R}_e \sum^{\tau_m}_{\tau=0} w(\tau) \Delta C(t - \tau)
+c_t = \mathcal{R}_e \Lambda_t = \mathcal{R}_e \sum^{\tau_m}_{\tau=0} w(\tau) c(t - \tau)
 \end{equation}
 
 For the sake of simplicity, 
@@ -710,7 +795,7 @@ $w \sim LogNormal \left( \mu = 4.7, \sigma = 2.9 \right)$.
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=\textwidth]{images/serial-intervals-overview.png}
+    \includegraphics[width=\textwidth]{generated/images/serial-intervals-overview.png}
   \end{center}
   \caption{Referenced serial intervals}
   \label{fig:serial-intervals-overview}
@@ -768,7 +853,7 @@ follows:
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=\textwidth]{images/largest-cities-incidence.png}
+    \includegraphics[width=\textwidth]{generated/images/largest-cities-incidence.png}
   \end{center}
   \caption{Observed incidence in the largest cities of Czechia}
   \label{fig:largest-cities-incidence}
@@ -788,6 +873,7 @@ Covid-19 reporting, as \cite{komenda2020} and corresponding web
 application authors describe the methods how the data are
 collected and processed.
 
+
 \subsection{Stationarity verification}
 
 As those data correspond to the time series, the stationarity 
@@ -799,7 +885,7 @@ If the unit root is present, the sample is non-stationary.
 Alternative hypothesis is, therefore, the stationarity of 
 the given sample.
 
-\input{tables/adf_test_prague}
+\input{generated/tables/adf_test_prague}
 
 In general, p-value is the probability that test statistic 
 of unknown distribution has equal or less extreme values 
@@ -843,7 +929,7 @@ formally $\Delta C = T + S + \epsilon$:
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=\textwidth]{images/seasonal-decomposition-additive.png}
+    \includegraphics[width=\textwidth]{generated/images/seasonal-decomposition-additive.png}
   \end{center}
   \caption{Example of additive seasonal decomposition}
   \label{fig:seasonal-decomposition-additive}
@@ -854,7 +940,7 @@ decomposition, particularly $\Delta C = T S \epsilon$:
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=\textwidth]{images/seasonal-decomposition-multiplicative.png}
+    \includegraphics[width=\textwidth]{generated/images/seasonal-decomposition-multiplicative.png}
   \end{center}
   \caption{Example of multiplicative seasonal decomposition}
   \label{fig:seasonal-decomposition-multiplicative}
@@ -1057,7 +1143,7 @@ before and after the logarithmic transformation:
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=\textwidth]{images/incidence-log-transform.png}
+    \includegraphics[width=\textwidth]{generated/images/incidence-log-transform.png}
   \end{center}
   \caption{Log transformation of daily incidence}
   \label{fig:incidence-log-transform}
@@ -1080,7 +1166,7 @@ $\Delta \theta_t = \theta_{t+1} - \theta_{t}$:
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=\textwidth]{images/theta-diff-figure.png}
+    \includegraphics[width=\textwidth]{generated/images/theta-diff-figure.png}
   \end{center}
   \caption{The plot of $\Delta \theta$}
   \label{fig:theta-diff}
@@ -1095,7 +1181,7 @@ of time window as the following figure presents:
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=\textwidth]{images/theta-sample-windows.png}
+    \includegraphics[width=\textwidth]{generated/images/theta-sample-windows.png}
   \end{center}
   \caption{The referenced windows for taking samples of $\Delta \theta$}
   \label{fig:theta-sample-windows}
@@ -1109,7 +1195,7 @@ Let's start with histograms:
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=\textwidth]{images/theta-diff-histogram.png}
+    \includegraphics[width=\textwidth]{generated/images/theta-diff-histogram.png}
   \end{center}
   \caption{The histogram of chosen $\Delta \theta$ samples}
   \label{fig:theta-diff-histogram}
@@ -1117,7 +1203,7 @@ Let's start with histograms:
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=\textwidth]{images/theta-diff-qq.png}
+    \includegraphics[width=\textwidth]{generated/images/theta-diff-qq.png}
   \end{center}
   \caption{Quantile-Quantile plot of $\Delta \theta$ samples}
   \label{fig:theta-diff-qq}
@@ -1125,7 +1211,7 @@ Let's start with histograms:
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=\textwidth]{images/theta-diff-ecdf.png}
+    \includegraphics[width=\textwidth]{generated/images/theta-diff-ecdf.png}
   \end{center}
   \caption{Empirical CDF of $\Delta \theta$ samples}
   \label{fig:theta-diff-ecdf}
@@ -1167,9 +1253,9 @@ normality tests. For the purpose of normality
 testing, Kolmogorov-Smirnov, Lilliefors and 
 Shapiro-Wilk tests were performed.
 
-\input{tables/theta-diff-ks-test}
-\input{tables/theta-diff-lilliefors-test}
-\input{tables/theta-diff-shapiro-wilk-test}
+\input{generated/tables/theta-diff-ks-test}
+\input{generated/tables/theta-diff-lilliefors-test}
+\input{generated/tables/theta-diff-shapiro-wilk-test}
 
 The strongest result is noted in the 
 Lilliefors test, then Shapiro-Wilk test and 
@@ -1249,11 +1335,11 @@ also called \textit{squared exponential kernel} or
 \textit{radial basis function (RBF) kernel} defined as:
 
 \begin{equation}
-k \left( x, x'; \ell \right) = \eta^2 exp \left[ -\frac{(x - x')^2}{2\ell^2} \right]
+k_{RBF} \left( x, x'; \ell \right) = exp \left[ -\frac{(x - x')^2}{2\ell^2} \right]
 \end{equation}
 
-where $\ell$ is the length scale hyperparameter, 
-known also as *bandwidth*. 
+where $\ell$ is the \textit{length scale} hyperparameter, 
+known also as \textit{bandwidth}. 
 This hyperparameter is distance which we expect 
 differences to matter.
 
@@ -1303,7 +1389,7 @@ directly observable from data.
 
 FIXME: rewrite this part
 
-Most common is the *Monte Carlo integration*, 
+Most common is the \textit{Monte Carlo integration}, 
 i.e. solving analytically intractable integral 
 by Monte Carlo techniques. 
 Let's imagine we have a random variable 
@@ -1382,6 +1468,8 @@ higher probability areas, however, in their
 underlaying structures, they usually somehow 
 follow the basic Metropolis algorithm (also 
 often with Hasting's modification).
+
+TODO: incorporate interesting \cite{beichl2000} article
 
 \subsection{Metropolis algorithm}
 
@@ -1590,13 +1678,19 @@ The likelihood is given by the \textit{negative binomial distribution}:
   c \sim NegBin(\mu=exp(\theta), \alpha)
 \end{equation}
 
+which is dependent on $\theta$ and $\alpha$ variables distributed as:
+
 \begin{equation}
   \alpha \sim Exponential(\lambda_\alpha)
 \end{equation}
 
 \begin{equation}
-  \theta \sim GP(m=b + ax, k=\eta^2 k)
+  \theta \sim GP(m=b + ax, k=\eta^2 k \left( x, x'; \ell \right))
 \end{equation}
+
+The $\theta$ is dependent on the selection of 
+coefficient $a$ and $b$ for linear trend, which are 
+given by Gaussians:
 
 \begin{equation}
   a \sim N(\mu_a, \sigma_a)
@@ -1606,15 +1700,13 @@ The likelihood is given by the \textit{negative binomial distribution}:
   b \sim N(\mu_b, \sigma_b)
 \end{equation}
 
-Priors are chosen:
-
-\begin{equation}
-  blah blah
-\end{equation}
+In the model $\mu_a$, $\mu_b$, $\sigma_a$, $\sigma_b$, 
+$\lambda_\alpha$ and $\eta$ can be 
+considered hyperparameters, which are tunned manually here.
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=8cm]{images/inc-model-graphviz.png}
+    \includegraphics[width=8cm]{generated/images/inc-model-graphviz.png}
   \end{center}
   \caption{Internal PyMC3 DAG representation of our incidence model}
   \label{fig:inc-model-graphviz}
@@ -1635,7 +1727,7 @@ For this reason, we pick the following samples for incidence validation:
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=10cm]{images/theta-posterior-1.png}
+    \includegraphics[width=10cm]{generated/images/theta-posterior-1.png}
   \end{center}
   \caption{Posterior of $\theta$ for sample 1}
   \label{fig:theta-posterior-1}
@@ -1681,21 +1773,21 @@ For this reason, we pick the following samples for incidence validation:
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=10cm]{images/incidence-posterior-predictive-1.png}
+  \includegraphics[width=10cm]{generated/images/incidence-posterior-predictive-1.png}
   \caption{Posterior predictive of $\hat{c}$ for sample 1}
   \label{fig:incidence-posterior-1}
 \end{figure}
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=10cm]{images/incidence-posterior-predictive-2.png}
+  \includegraphics[width=10cm]{generated/images/incidence-posterior-predictive-2.png}
   \caption{Posterior predictive of $\hat{c}$ for sample 2}
   \label{fig:incidence-posterior-2}
 \end{figure}
 
 \begin{figure}[h]
   \centering
-  \includegraphics[width=10cm]{images/incidence-posterior-predictive-3.png}
+  \includegraphics[width=10cm]{generated/images/incidence-posterior-predictive-3.png}
   \caption{Posterior predictive of $\hat{c}$ for sample 3}
   \label{fig:incidence-posterior-3}
 \end{figure}
@@ -1760,7 +1852,7 @@ where $w$ is the mean serial interval. In our case, $w$ is a vector, therefore:
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=11cm]{images/risk-model-fake-rt.png}
+    \includegraphics[width=11cm]{generated/images/risk-model-fake-rt.png}
   \end{center}
   \caption{Generated $\mathcal{R}_{e}$}
   \label{fig:risk-model-fake-rt}
@@ -1768,7 +1860,7 @@ where $w$ is the mean serial interval. In our case, $w$ is a vector, therefore:
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=11cm]{images/risk-model-fake-sir.png}
+    \includegraphics[width=11cm]{generated/images/risk-model-fake-sir.png}
   \end{center}
   \caption{Generated SIR data}
   \label{fig:risk-model-fake-sir}
@@ -1776,7 +1868,7 @@ where $w$ is the mean serial interval. In our case, $w$ is a vector, therefore:
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=11cm]{images/risk-model-fake-incidence.png}
+    \includegraphics[width=11cm]{generated/images/risk-model-fake-incidence.png}
   \end{center}
   \caption{Generated incidence}
   \label{fig:risk-model-fake-incidence}
@@ -1784,7 +1876,7 @@ where $w$ is the mean serial interval. In our case, $w$ is a vector, therefore:
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=11cm]{images/risk-model-incidence-posterior-predictive.png}
+    \includegraphics[width=11cm]{generated/images/risk-model-incidence-posterior-predictive.png}
   \end{center}
   \caption{Posterior TODO:}
   \label{fig:risk-model-fake-incidence}
@@ -1810,49 +1902,77 @@ where $w$ is the mean serial interval. In our case, $w$ is a vector, therefore:
 
 \chapter{An appendix}
 
-\input{tables/adf-test-brno}
-\input{tables/adf-test-ostrava}
+\input{generated/tables/adf-test-brno}
+\input{generated/tables/adf-test-ostrava}
 
-\begin{figure}[h]
+\begin{figure}[H]
   \begin{center}
-    \includegraphics[width=\textwidth]{images/dev-incidence-1.png}
+    \includegraphics[width=\textwidth]{generated/images/dev-incidence-1.png}
   \end{center}
   \caption{Sample 1 for the incidence inference tuning}
   \label{fig:dev-incidence-1}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
   \begin{center}
-    \includegraphics[width=\textwidth]{images/dev-incidence-2.png}
+    \includegraphics[width=\textwidth]{generated/images/dev-incidence-2.png}
   \end{center}
   \caption{Sample 2 for the incidence inference tuning}
   \label{fig:dev-incidence-2}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
   \begin{center}
-    \includegraphics[width=\textwidth]{images/dev-incidence-3.png}
+    \includegraphics[width=\textwidth]{generated/images/dev-incidence-3.png}
   \end{center}
   \caption{Sample 3 for the incidence inference tuning}
   \label{fig:dev-incidence-3}
 \end{figure}
 
 
-\begin{figure}[h]
+\begin{figure}[H]
   \begin{center}
-    \includegraphics[width=\textwidth]{images/theta-posterior-2.png}
+    \includegraphics[width=\textwidth]{generated/images/theta-posterior-2.png}
   \end{center}
   \caption{Posterior of $\theta$ for sample 2}
   \label{fig:theta-posterior-2}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
   \begin{center}
-    \includegraphics[width=\textwidth]{images/theta-posterior-3.png}
+    \includegraphics[width=\textwidth]{generated/images/theta-posterior-3.png}
   \end{center}
   \caption{Posterior of $\theta$ for sample 3}
   \label{fig:theta-posterior-3}
 \end{figure}
 
+\newpage
+\section{The source code}
+
+\subsection{Notebook initialization}
+
+\input{generated/snippets/init-installs.tex}
+\input{generated/snippets/init-imports.tex}
+
+\subsection{Utilities}
+
+\input{generated/snippets/utils-base-figure}
+\input{generated/snippets/utils-base-plotly}
+\input{generated/snippets/utils-base-matplotlib}
+\input{generated/snippets/utils-base-latex}
+\input{generated/snippets/utils-adf-test}
+
+\subsection{Data wrangling}
+
+% \input{generated/snippets/data-serial-interval}
+% \input{generated/snippets/data-serial-interval-instances}
+% \input{generated/snippets/data-serial-interval-overview}
+% \input{generated/snippets/data-incidence}
+% \input{generated/snippets/data-largest-cities-plot}
+% \input{generated/snippets/data-adf-test-prague}
+% \input{generated/snippets/data-adf-test-brno-ostrava}
+% \input{generated/snippets/data-seasonal-decomposition-figure}
+% \input{generated/snippets/data-seasonal-decomposition-additive}
+% \input{generated/snippets/data-seasonal-decomposition-multiplicative}
 
 \end{document}
