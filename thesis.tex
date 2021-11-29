@@ -27,25 +27,32 @@
 ]{fithesis4}
 %% The following section sets up the locales used in the thesis.
 \usepackage[resetfonts]{cmap} %% We need to load the T2A font encoding
-\usepackage[T1,T2A]{fontenc}  %% to use the Cyrillic fonts with Russian texts.
-\usepackage[utf8]{inputenc}
+% \usepackage[T1,T2A]{fontenc}  %% to use the Cyrillic fonts with Russian texts.
 \usepackage[
   main=english, %% By using `czech` or `slovak` as the main locale
                 %% instead of `english`, you can typeset the thesis
                 %% in either Czech or Slovak, respectively.
-  english, german, russian, czech, slovak %% The additional keys allow
+  english, czech %% The additional keys allow
 ]{babel}        %% foreign texts to be typeset as follows:
+% \usepackage[utf8x]{inputenc}
+\usepackage[utf8]{inputenc}
+
+\inputencoding{utf8}
 \DeclareUnicodeCharacter{0301}{\'{e}}
-%%
-%%   \begin{otherlanguage}{german}  ... \end{otherlanguage}
-%%   \begin{otherlanguage}{russian} ... \end{otherlanguage}
-%%   \begin{otherlanguage}{czech}   ... \end{otherlanguage}
-%%   \begin{otherlanguage}{slovak}  ... \end{otherlanguage}
-%%
+% \usepackage[cp858]{inputenx}
+% \DeclareUnicodeCharacter{0160}{\v{S}}
+% \DeclareUnicodeCharacter{04F1}{\"\cyru}
+% \DeclareUnicodeCharacter{04F2}{\H\CYRU}
+% \DeclareUnicodeCharacter{04F3}{\H\cyru}
+% \usepackage{newunicodechar}
+% \newunicodechar{�}{x}
+% Šumperk
+\usepackage{textcomp}
+
 %% For non-Latin scripts, it may be necessary to load additional
 %% fonts:
 \usepackage{paratype}
-\def\textrussian#1{{\usefont{T2A}{PTSerif-TLF}{m}{rm}#1}}
+% \def\textrussian#1{{\usefont{T2A}{PTSerif-TLF}{m}{rm}#1}}
 %%
 %% The following section sets up the metadata of the thesis.
 \thesissetup{
@@ -67,7 +74,7 @@
       Although the probabilistic model is tuned for modelling the risk of being infected by Covid-19 in specific districts of the Czechia, it might be, with little adjustment, used for modelling other epidemies as well.
     },
     thanks      = {%
-      I would like to thank to my supervisor, RNDr. Petr Novotný,~Ph.D.,~especially for introducing me into probabilistic modeling and for the challenge I was able to take by choosing the thesis proposal. Also for his guidance, support and valuable advices, he provided for entire process. I would also like to thank to every author of each title mentioned in bibliography for their work, so I was able to built this thesis. And also, I won't forget to thank to my family and girlfriend for their support.
+      I would like to thank to my supervisor, RNDr. Petr Novotný,~Ph.D.,~especially for introducing me into probabilistic modeling and for the challenge I was able to take by choosing this thesis proposal. Also for his guidance, support and valuable advices, he provided for entire process. I would also like to thank to every author of each title mentioned in bibliography for their work, so I was able to built this thesis. And also, I won't forget to thank to my family and girlfriend for their support.
     },
     bib         = references.bib,
     %% Remove the following line to use the JVS 2018 faculty logo.
@@ -82,6 +89,8 @@
 %% These additional packages are used within the document:
 \usepackage{paralist} %% Compact list environments
 \usepackage{amsmath}  %% Mathematics
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
 \usepackage{amsthm}
 \usepackage{amsfonts}
 \usepackage{amssymb}
@@ -167,7 +176,8 @@ probabilistic approach to model systematic epidemic risk of
 infectious contact.
 
 
-\section{The risk modelling}
+\chapter{The risk as a probability}
+\label{chap:risk-as-probability}
 
 The risk itself can be, in very general taxonomy, seen from
 \textit{idiosyncratic} and \textit{systematic} perspective.
@@ -184,72 +194,98 @@ is primary focused on the systematic risk.
 
 In the quantitative risk assessment way of thinking, the risk can be
 perceived as a probability \cite[Chapter~14]{bahr2014}.
-In out case, the risk we model is a probability of meeting an
+In our case, the risk we model will be a probability of meeting at least one
 infected individual given the number of contacts:
 
-\begin{equation}
-  p(\text{meet infected individual} | \text{number of contacts})
+\begin{equation}\label{eq:risk-first}
+  \mathbb{P}(\text{at least one is infectious} | \text{number of contacts})
 \end{equation}
 
-This is computed using the \textit{hypergeometric distribution} 
-given by  the following \textit{probability mass function}:
+Let $N$ denote the size of population and $I$ the number of infected
+individuals among that population, thus $I \leq N$.
+Assuming the infectious $I$ are uniformly distributed
+across population, $p = \frac{I}{N}$ is the probability of
+selecting infected individual.
+This corresponds to the \textit{Bernoulli 
+distribution} \cite{bernoulli-dist}:
 
 \begin{equation}
-p \left( x \right) = 
-\frac{
-    \binom{K}{x}
-    \binom{N-K}{n-x}
-  }{
-    \binom{N}{n}
-  } =
-  \frac{
-    n!K! \left( N - n \right)!\left( N - K \right )!
-  }{
-    N! x! \left(K - x\right)! \left( n - x \right)! \left( N - K - n + x \right)!
-  }
+  X \sim Bernoulli \left( p \right)
 \end{equation}
-where $\binom{a}{b}$ is a binomial coefficient, and which is valid for condition $max\left( 0, K - N + n \right) \leq x \leq min\left( K, n \right)$, zero otherwise. Hypergeometric distribution is a discrete distribution modelling count random variable $X$ of entities with specific sign in sample size $n$, where the sample is drawn from total population $N$, where specific sign is assumed on $K$ entities.
 
-In the case of this thesis, the specific sign will be 
-infectivity of an individual.
-So if $N$ is the size of the population, $K$ is the 
-number of infected individuals in that population and 
-sample size $n$ is the number of unique contacts we 
-had, then $X$ corresponds to number of infected 
-individuals we might met. When $n = 1$, the 
-hypergeometric distribution corresponds to Bernoulli 
-distribution, therefore 
-$X \sim Bernoulli \left( p \right)$, where $p$ is the 
-probability of meeting one infected individual 
-$p = K N^{-1}$. 
-The only problem is in the estimation of number of 
-infected individuals $k$, as they this is usually not 
-reported and therefore needs to be inferred. 
-For this puposes, the epidemiology foundations have 
-to be introduced.
+where $X$ corresponds to the dichotomous random variable
+($X = 1 \Rightarrow \text{infectious}$, $X = 0 \Rightarrow \text{non-infectious}$).
+
+Now lets bring the \textit{number of contacts} from 
+\eqref{eq:risk-first} into the computation.
+This quantity can be imagined as a size of the sample of people
+the investigated individual (the one for whom we compute the risk)
+have met previously.
+If we denote the size of this sample $n$, we are basically interested
+in the number of infected individuals $i$ in that sample such 
+that $i \leq n$. We can rewrite \eqref{eq:risk-first} as:
+
+\begin{equation}\label{eq:risk-second}
+  \mathbb{P}(i \geq 1 | n)
+\end{equation}
+
+As we assume $i$ to be discrete random variable,
+the discrete probabilistic distributions should be considered.
+Namingly \textit{binomial}, \textit{negative binomial} and 
+\textit{hypergeometric} distributions.
+
+Both the binomial and negative binomial distributions
+are built on top of independent Bernoulli trials.
+This assumes the probability $p$ of selecting each particular
+individual is same.
+This is theoretically not true for our case, because we
+are basically taking samples without replacement.
+This means the probability of choosing each individual
+changes during the sampling process, i.e., sampled 
+individual is no longer part of the remaining
+population to sample from. This is valid only for
+\textit{hypergeometric distribution} \cite{hypergeometric-dist}.
+Therefore, the \textit{probability mass function} for $i$ given the
+$N$, $I$ and $n$, in our case, will be:
+
+\begin{equation}
+  p(i) = \frac{ \binom{I}{i} \binom{N - I}{n - i} }{ \binom{N}{n} }
+\end{equation}
+
+where $\binom{a}{b}$ is a binomial coefficient.
+We assume the validity of the p.m.f. for the condition
+$max\left( 0, I - N + n \right) \leq i \leq min\left( I, n \right)$.
+As the $N$ and $n$ are known values, and $i$ the quantity we want 
+to know, the remaining question is how to approach value of $I$.
+
+Fortunatelly, this thesis provides the probabilistic solution,
+but before we dive in, we have to introduce
+epidemiological fundaments first, because every data science
+project requires particular \textit{domain knowledge} to
+understand problem more deeply, and this is not an exception.
 
 
 \chapter{Epidemiological prerequisites}
+\label{chap:epidemiological-prerequisites}
 
-This chapter provides basic insight into the epidemiology, 
+This chapter provides basic insight into the mathematical
+epidemiology, 
 i.e. history of mathematical modelling to highlight gradual 
 development of mathematical methods, basic terminology 
 used both in epidemiology and this thesis, and the most 
-basic \textit{SIR compartmental model} and alternative
-non-compartmental model.
-Although the latter model solution itself is rather data 
-science than epidemiology, following basic epidemiologic 
+basic mathematical models.
+Following basic epidemiologic 
 overview will help to understand the whole concept how 
 the solution was build.
 
 During the gradual development of history,
 the people registered several deadly diseases of unknown origin.
-Then survivors tended to investigate the causes of those 
+Then survivors tended to investigate causes of those 
 fatalities to avoid future outbreaks, or at least, mitigate its effects.
 In that sense, the science about disease spread 
 prevention has started to arising.
-U.S. Department of Health and Human Services Centers 
-for Disease Control and Prevention (CDC) provides the 
+\textit{U.S. Department of Health and Human Services Centers 
+for Disease Control and Prevention} (\textit{CDC}) provides the 
 following definition for \textit{epidemiology} \cite{cdc2006}:
 
 \begin{displayquote}
@@ -261,12 +297,15 @@ following definition for \textit{epidemiology} \cite{cdc2006}:
 
 Nowadays, the mathematical modelling is necessary 
 step when disease outbreak occurs, starting with computation 
-of $\mathcal{R}_0$ to reveal severity of that disease.
+of $\mathcal{R}_0$ (more on this later) to reveal severity 
+of the disease.
 Later then, it helps with decision 
 making during the pandemic state, keeping population safe 
 according to health, economy and social amenities.
+But how did it started?
 
-\section{History of mathematical modelling in the epidemiology}
+
+\section{History of mathematical modelling in epidemiology}
 
 The first study of this type considered was the book 1663 by 
 John Graunt, addressing methods of public health statistics.
@@ -284,11 +323,12 @@ modern mathematical epidemiology due to his contribution
 to mathematical modelling of malaria
 transmission. He derived a threshold quantity, which is 
 nowadays known as a \textit{basic reproduction number}
-denoted by $\mathcal{R}_0$ (more on this later).
+denoted by $\mathcal{R}_0$.
 Unfortunately, at his times, the mathematical modelling 
-of the diseases was not very accepted by the professional community.
+of diseases was not very accepted by the professional community.
 The change of mind in this field was bring by the invention 
-of mathematical foundations of SIR model in 1927 by W. O. Kermack and 
+of mathematical foundations of compartment models
+(SIR model to be more specific) in 1927 by W. O. Kermack and 
 A. G. McKendrick \cite{kermack1927}.
 
 
@@ -301,33 +341,37 @@ and \textit{recovery} in the bathtub analogy:
 
 \begin{figure}[h]
   \begin{center}
-    \includegraphics[width=6cm]{static/images/epidemiologists-bathtub.png}
+    \includegraphics[width=8cm]{static/images/epidemiologists-bathtub.png}
   \end{center}
-  \caption{The "epidemiologist's bathtub" \cite{arnold2020}}
+  \caption{The bathtub analogy \cite{steward2020}}
   \label{fig:epidemiologists-bathtub}
 \end{figure}
 
 Let the bath represent a
-set of infected people (those who carry the disease) in certain time.
+set of infected people (those who are infectious) in certain time.
 The size of this set is so-called \textit{prevalence} (sometimes also referred 
 as \textit{active cases} number) for that time.
 The prevalence can be \textit{increased} or \textit{decreased} when time is shifted upwards.
 The increase is referred as the \textit{incidence} (will be mostly denoted $c$ here).
-In the case of decrease of prevalence, this may be done in two ways:
+The decrease of prevalence may be done in two ways:
 the infected individual dies - increase in \textit{mortality}, or, the
-infected individual get restored from the disease - get 
-\textit{recovered} in terms of epidemiology.
+infected individual get restored from the disease - \textit{recovery} increase.
 If we do not distinguish the way of decrease, we say the
-individual was \textit{removed}.
+individual was \textit{removed}, i.e., the individual is excluded.
 
 Basically, from the perspective of specific case, the disease is
 transmitted between \textit{infector} $A$ and \textit{infectee} $B$.
 The \textit{infector} (also known as \textit{primary case}) is the one who carry the disease and
 \textit{infectee} (also known as \textit{secondary case}) is the 
 susceptible person, which is being infected.
-This abstraction allows to specify several important time intervals.
+We assume also \textit{infection age} (denoted $a$ here),
+which is the time for how long the specific individual is infected.
+Basically, if the infector $A$ infects infectee $B$, it is done at infector's
+infection age $a_A > 0$, and when the transmission of infection suceed,
+the infectee starts its own infection age $a_B = 0$.
+This abstraction allows to specify several important time intervals:
 
-\begin{figure}[h]
+\begin{figure}[H]
   \begin{center}
     \includegraphics[width=11cm]{static/images/zhao2020_terms.png}
   \end{center}
@@ -335,24 +379,16 @@ This abstraction allows to specify several important time intervals.
   \label{fig:zhao-transmissive-chain-example}
 \end{figure}
 
-These intervals are described in the figure 
-\ref{fig:zhao-transmissive-chain-example}.
 Most important time intervals are 
-\textit{incubation period}, \textit{serial interval} and \textit{generation time}.
+\textit{incubation period} $h$, \textit{serial interval} $s$ and \textit{generation time} $g$.
 \textit{Incubation period} is the time between exposure up to time of onset 
-symptoms. Then \textit{symptomatic period} begins.
-\textit{Generation time} is the exact time period between 
-the infector was infected and the infectee was infected by the infector.
+symptoms. In this period, infected is usually not aware about his infection.
+It is revealed later when \textit{symptomatic period} began.
+\textit{Generation time} is the exact time period between time
+the infector was infected and time the infectee was infected by the infector.
 The \textit{serial interval} has similar nature. It is 
 the time period between the onset symptoms of the infector 
 and onset symptoms noticed on the associated infectee.
-
-% $\phi_h$
-
-% $\phi_s$
-
-% $\phi_g$
-
 
 % TG, also in the picture \ref{fig:zhao-transmissive-chain-example}, abbreviates 
 % \textit{trasmission generation}, which is the time 
@@ -362,9 +398,14 @@ and onset symptoms noticed on the associated infectee.
 % primary case until the associated secondary case can 
 % be transmissibe as well.
 
-TODO: symptomatic vs pre-symptomatic
+When the infector infects the infectee before the infector's
+symptoms appear, we call it \textit{presymptomatic transmission}, i.e.,
+infectee was infected in infector's \textit{incubation period}
+(as shown in the figure \ref{fig:nishiura-transmission}).
 
-TODO: \textit{age of infection} is the time for how long the specific individual is infected.
+When $s < 0$ the infectee's symptoms occurred earier than infector's.
+On the other hand, $g > 0$ is always
+valid, because the infector is always infected earlier than infectee.
 
 \begin{figure}[h]
   \includegraphics[width=10cm]{static/images/nishiura2020_terms.png}
@@ -372,22 +413,23 @@ TODO: \textit{age of infection} is the time for how long the specific individual
   \label{fig:nishiura-transmission}
 \end{figure}
 
-In many cases, the serial interval for modeling $\mathcal{R}_t$ 
-is used because of its easier determination. 
-The main pitfall lies in the possibility of negative serial 
-interval, that is when infectee's symptoms are revealed 
-earlier than infector's. 
-On the other hand, generation time has to be higher than 
-zero in its nature, but it is unknown in many cases. 
+% In many cases, the serial interval for modeling $\mathcal{R}_t$ 
+% is used because of its easier determination. 
+% The main pitfall lies in the possibility of negative serial 
+% interval, that is when infectee's symptoms are revealed 
+% earlier than infector's. 
+% On the other hand, generation time has to be higher than 
+% zero in its nature, but it is unknown in many cases. 
 
-For example \cite{knight2020} uses deconvolution of incubation 
-period and serial interval to obtain generation time.
+% For example \cite{knight2020} uses deconvolution of incubation 
+% period and serial interval to obtain generation time.
 
 
 
-\section{SIR model}
+\section{Kermack–McKendrick model}
 
-This is one of the first model, proposed in 1927 by 
+This is one of the first well-known model (generally 
+known as \textit{SIR model}), proposed in 1927 by 
 William Ogilvy Kermack and Anderson Gray McKendrick, and is 
 usually used as an introductionary model to epidemic 
 modeling \cite{martcheva2015} due to its simplicity. 
@@ -401,7 +443,7 @@ name \textit{compartment models} \cite{bacaer2011}):
 \begin{itemize}
   \item \textit{Susceptibles (size denoted $S$)} - set containing non-infected individuals, but with possibility to become infected.
   \item \textit{Infectious (size denoted $I$)} - individuals who are infected and also able to infect susceptible individuals.
-  \item \textit{Removed (size denoted $R$)} - those who was restored from illnes (and gained immunity) or those who died. In both cases, they are removed from susceptibles and infectious sets and the do not play further role.
+  \item \textit{Recovery / Removed (size denoted $R$)} - those who was restored from illnes (and gained immunity) or those who died. In both cases, they are removed from susceptibles and infectious sets and the do not play further role.
 \end{itemize}
 
 To define the SIR model, let us explain the \textit{force of infection} first.
@@ -415,8 +457,9 @@ potential spreading force of the infectious compartment:
 
 Where $\rho$ is the average contact rate of person within whole 
 population, no matter if they are susceptible, infectious 
-or removed. Therefore $\rho N$ is the \textit{average number 
-of contacts per unit of time}.
+or removed.
+Let $N$ be the size of population,
+then $\rho N$ is the \textit{average number of contacts}.
 Assuming the susceptibles are independently and identically 
 distributed, the probability of selecting any susceptible 
 in the population is equal to $\frac{S}{N}$.
@@ -437,14 +480,14 @@ met one infected individual per unit of time.
 Now the incidence may be formulated as:
 
 \begin{equation}
-	c = \tau \rho S I = \lambda S
+	c = \tau \rho I \frac{S}{N} = \lambda \frac{S}{N}
 \end{equation}
 
 For practical usages denote $\tau \rho$ as $\beta$ 
 and substitute it into previous equation to get:
 
 \begin{equation}
-	c = \beta S I
+	c = \beta I \frac{S}{N}
 \end{equation}
 
 The compartment models are usually specified as a set of
@@ -455,24 +498,20 @@ infected only once).
 This decrease is equal to the incidence, hence:
 
 \begin{equation}
-	\frac{\partial{S}}{\partial{t}} = -c = -\beta S I
+	\frac{\partial{S}}{\partial{t}} = -c = -\beta I \frac{S}{N}
 \end{equation}
 
-The first differential equation for the SIR model has 
-been established. It can be interpreted as a decrease 
-in size of susceptible compartment which is equal 
-to incidence.
-The decrease of susceptibles $\beta S I$ is basically 
+The decrease of susceptibles $\beta I \frac{S}{N}$ is basically 
 count of the newly infected individuals, which have 
 to be added to $I$. 
-Then some of the infected individuals restore from 
-the infection or decease. 
+Then, some of the infected individuals restore from 
+the infection, or decease. 
 This proportion is equal to $\gamma I$, where $\gamma$ 
-is called recovery rate. Both increase and decrease in 
+is called \textit{recovery rate}. Both increase and decrease in 
 the $I$ compartment is caught in equation:
 
-\begin{equation}
-	\frac{\partial{I}}{\partial{t}} = \beta S I - \gamma I
+\begin{equation}\label{eq:sir-model-partial-I}
+	\frac{\partial{I}}{\partial{t}} = \beta I \frac{S}{N} - \gamma I
 \end{equation}
 
 Finally, the decreased proportion $\gamma I$ from the 
@@ -496,9 +535,9 @@ This model has several assumptions:
   \item When susceptible gets infected, it also becomes infectious
   \item Each susceptible has equal probability to become infectious
   \item Everyone can be infected only once in his lifetime
+  \item There is no latent period, once the transmission of infection is done, the infectee is infectious instantaneously (in continuous model)
   \item Each infected individual is equally infective \cite{volz2018}
 \end{enumerate}
-
 
 
 \section{Reproduction number}
@@ -537,25 +576,54 @@ When infection is
 spreading through a population, it is often more convenient
 to work with the effective reproduction number $\mathcal{R}_e(t)$.
 
-\section{Exponential growth model}
 
-The severity of epidemic spread can be estimated also by the
-\textit{exponential growth rate} $r$. If $r > 0$ the epidemic is growing,
-if $r = 0$, then epidemic holds constant incidence, and finally, 
-when $r < 0$ the epidemic is weakening in its spread.
-In the case of SIR model, the $r$ can be expressed as \cite{ma2019}:
+\section{Exponential model}
 
-\begin{equation}
-  r = \beta - \gamma
+The exponential model (also known as \textit{Malthusian} model, named after the 
+Reverend Thomas Malthus\footnote{\url{https://cs.wikipedia.org/wiki/Thomas_Robert_Malthus}})
+is based on the assumption that a change in the population 
+is proportional to its size \cite{martcheva2015}:
+
+\begin{equation}\label{eq:malthusian-diff}
+  \frac{\partial N}{\partial t} = b N - d N
 \end{equation}
 
-FIXME: From the epidemiological perspective, we can 
+where $b$ is a birth rate and $d$ is a death rate, which 
+can be extracted to the \textit{exponential growth rate} $r = b - d$.
+The solution for differential equation \eqref{eq:malthusian-diff} is therefore:
+\begin{equation}
+  N(t) = N(0) e^{(b - d)t} = N(0) e^{rt}
+\end{equation}
+
+If $r > 0$ the population is growing,
+if $r = 0$, then population remains constant, and finally, 
+when $r < 0$ the population leads to extinction.
+
+We can utilize exponential model,
+for example, in the early epidemic phase,
+where $\forall u \in (0, t) : S(u) \approx N$, so we can assume $\frac{S}{N} = 1$,
+and, after replacing population $N$ for infectious $I$, we get:
 
 \begin{equation}
-  I(t) = I_0 e^{rt}
+  \frac{\partial I}{\partial t} = b I - d I
 \end{equation}
+
+If we also replace $b$ for $\beta$ and $d$ for $\gamma$, we
+obtain exacty the equation \eqref{eq:sir-model-partial-I} for $\frac{S}{N} = 1$ in the SIR model.
+Therefore, in the early phase of epidemic, it holds:
+
+\begin{equation}
+  I(t) = I(0) e^{rt}
+\end{equation}
+
+where $r = \beta - \gamma$ is exponential growth rate for the early epidemic
+if the SIR model is used \cite{ma2019}.
+
+% and infectious time is assumed to be exponentially distributed
+
 
 \section{Wallinga \& Lipsitch model}
+\label{sec:wl-model}
 
 Wallinga and Lipsitch \cite{wallinga2007} developed a non-parametric
 model (shortened as \textit{WL model} here), which is able to infer
@@ -564,14 +632,14 @@ the basic reproduction number from the \textit{exponential growth rate} $r$.
 This model is based on the exponential growth model described earlier and
 Euler-Lotka equation\footnote{\url{https://en.wikipedia.org/wiki/Euler\%E2\%80\%93Lotka_equation}},
 which was originally used to model population dynamics.
-Let the $b(t)$ be number of female births in the time $t$, $a$ is 
+Let the $b(t)$ be the number of female births at the time $t$, $a$ is 
 age of the mother (assuming population has sufficient 
 number of males to ensure reproduction, therefore we do not 
 count them in), and $n(a)$ is the rate of production of female offsprings 
 by one mother at her age $a$. Then we have this equation (which is 
 special type of renewal equation \cite{feller1941}):
 
-\begin{equation}
+\begin{equation}\label{eq:wl-model-renewal}
   b(t) = \int_{0}^{\infty} b(t - a) n(a) da
 \end{equation}
 
@@ -591,7 +659,7 @@ previous equation may be rewritten to:
   Q e^{rt} = \int_{0}^{\infty} Q e^{rt} e^{-ra} n(a) da
 \end{equation}
 
-Note the $Q e^{rt}$ on both sides. At the side of integral and 
+Note the $Q e^{rt}$ on both sides. At the side of integral, 
 as this expression is independent of $a$, i.e., constant, we can 
 divide both sides by this constant to obtain Euler-Lotka
 equation (in the original equation $n(a) = l(a) m(a)$, but 
@@ -603,13 +671,14 @@ here is intentional simplification):
 
 To incorporate $\mathcal{R}$ we can normalize the $n(a)$, in the
 previous equation, by the equation \eqref{eq:wl-model-R} to get
-normalized distribution $\omega(a)$:
+normalized distribution $\omega(a)$ (note $\omega(a)$ becomes 
+probability density function):
 
 \begin{equation}
   \omega(a) = \frac{n(a)}{\int_0^{\infty} n(a) da} = \frac{n(a)}{\mathcal{R}}
 \end{equation}
 
-Let the previous be employed in the equation \eqref{eq:wl-model-euler-lotka}:
+Now the previous may be employed in the equation \eqref{eq:wl-model-euler-lotka}:
 
 \begin{equation}\label{eq:wl-model-euler-lotka-R}
   \frac{1}{\mathcal{R}} = \int_{0}^{\infty} e^{-ra} \frac{n(a)}{\mathcal{R}} da = \int_{0}^{\infty} e^{-ra} \omega(a) da
@@ -622,178 +691,466 @@ $\mathcal{R}$ from the exponential growth $r$ and reproduction profile $\omega$:
   \mathcal{R} = \frac{1}{\int_{0}^{\infty} e^{-ra} \omega(a) da}
 \end{equation}
 
-In this case $\omega$ fulfills the definition of probability density
-(sums up to 1). In the case of epidemiology, $\omega$ represents
-distribution of \textit{generation time} defined earlier.
-$\mathcal{R}$
+For the epidemiology, $\omega$ represents
+a distribution of \textit{generation time} defined earlier.
+The $\mathcal{R}$ is average number of new infectees from one infector
+during its whole infection age (\cite{fraser2007} 
+calls it \textit{instantaneous reproduction number}).
+This approach works well in the early phases of epidemic,
+when incidence grows exponentially
+and proportion of susceptibles is not very drastically
+changed $S(0) \approx N$ \cite{park2021}, then we can assume 
+$\mathcal{R}_0 = \mathcal{R}$.
+
 
 \section{Fraser model}
+\label{sec:fraser-model}
 
 The \cite{fraser2007} proposes model where the effective 
-reproduction number $\mathcal{R}_t$ is computed from the 
+reproduction number $\mathcal{R}_e$ is computed from the 
 daily incidence data and generation time only.
 
 The approach of Fraser is very related to WL
-model.
-
-
-The main idea in this model is the number of newly infected 
-individuals $c(t)$ in time $t$ is proportional to 
-previous prevalent cases $c(t - \tau)$, where 
-$\tau > 0$ denotes infection age, and the transmissibility 
-$A(t, \tau)$. The infection age describes how long ago 
-the particular infection was established in the specific 
-individual.
-The reason, $A(t, \tau)$ depends on calendar time $t$ is 
-the epidemic may change its behavior seasonaly or the 
-public restrictions may change during time, for example.
-The $\tau$ dependence is given by the age of infection 
-since the spreading ability of specific infected individual 
-also might be changed during different phases of the 
-particular illnes.
-Then we can use the convolution over previous cases 
-and transmissibility to obtain the expected incidence:
+model. In fact, it utilizes modified equation
+\eqref{eq:wl-model-renewal}, where 
+$n(a) = A(t, a)$ and $b(t) = c(t)$, therefore:
 
 \begin{equation}
-c( t ) = \int^{\infty}_0 A ( t, \tau ) c ( t - \tau ) d\tau
+  c( t ) = \int^{\infty}_0 c ( t - a ) A ( t, a ) da
 \end{equation}
 
-For practical purposes, it is convenient to bound $\tau$ 
-by specific $\tau_m$ which may correspond to the maximal 
-infection age, assuming nobody is infectious after 
-$\tau_m$, therefore $A(t, \tau) = 0$ if $\tau > \tau_m$.
+The reason, $A(t, a)$ depends on calendar time $t$ is,
+for example, 
+the epidemic may change its behavior seasonally, or the 
+public restrictions may change during time.
+
+For practical purposes, it is convenient to bound $a$ 
+by specific $a_{max}$ which may correspond to the expected
+maximal infection age, assuming nobody is infectious after 
+$a_{max}$, therefore $A(t, a) = 0$ if $a > a_{max}$.
 This leads to the next simplification.
-For bounded $\tau < \tau_m$, where $\tau_m$ is 
-sufficiently small, $A(t, \tau) = A(s, \tau)$ for 
-$\forall s \in \left[ t - \tau_m, t \right]$.
+For bounded $a \leq a_{max}$, where $a_{max}$ is 
+sufficiently small, $A(t, a) = A(s, a)$ for 
+$\forall s \in \left[ t - a_{max}, t \right]$.
 Next, Fraser assumes that the seasonal infectivity is 
-independent of infection age, therefore the transmissibility 
-can be decomposed as:
+independent of infection age $a$ and vice versa, therefore
+the transmissibility can be decomposed as:
 
 \begin{equation}
-A(t, \tau) = \phi_1(t) \phi_2(\tau)
+A(t, a) = \phi_1(t) \phi_2(a)
 \end{equation}
 
 The average number of infected cases from the single infected 
 individual can be obtained by summing over transmissibility:
 
 \begin{equation}
-\mathcal{R}_e = \int^{\infty}_0 A(t, \tau) d\tau = \int^{\infty}_0 \phi_1(t) \phi_2(\tau) d\tau = \phi_1(t) \int^{\infty}_0 \phi_2(\tau) d\tau
+  \mathcal{R}(t) = \int^{\infty}_0 A(t, a) da = \phi_1(t) \int^{\infty}_0 \phi_2(a) da
 \end{equation}
 
-The $\phi_1(t)$ and $\phi_2(\tau)$ might be reweighted as 
-product $\phi_1(t) \phi_2(\tau)$, without loss of generality. 
-Therefore $\int^{\infty}_0 \phi_2(\tau) d\tau = 1$ may be assumed. 
-This bring that $\mathcal{R}_e = \phi_1(t)$, while $\phi_2(\tau)$ 
-is considered to be a distribution of infectivity $\tau$ ago, 
-meaning idealised generation time distribution $w$. 
+The $\phi_1(t)$ and $\phi_2(a)$ might be reweighted as 
+product $\phi_1(t) \phi_2(a)$, without loss of generality. 
+Therefore $\int^{\infty}_0 \phi_2(a) da = 1$ may be assumed. 
+This bring that $\mathcal{R} = \phi_1(t)$, while $\phi_2(a)$ 
+is considered to be a distribution of infectivity $a$ ago, 
+meaning idealised generation time distribution $\omega$. 
 Therefore:
 
 \begin{equation}
-A(t, \tau) = \mathcal{R}(t) w(\tau)
+A(t, a) = \mathcal{R}(t) \omega(a)
 \end{equation}
 
 Putting it to the renewal equation the following is obtained:
 
 \begin{equation}
   \begin{split}
-    c(t) & = \int^{\infty}_0 \mathcal{R}(t) w(\tau) c(t - \tau) d\tau \\
-    & = \mathcal{R}(t) \int^{\infty}_0 w(\tau) c(t - \tau) d\tau\\
+    c(t) & = \int^{\infty}_0 \mathcal{R}(t) \omega(a) c(t - a) da \\
+    & = \mathcal{R}(t) \int^{\infty}_0 \omega(a) c(t - a) da\\
     & = \mathcal{R}(t) \Lambda(t)    
   \end{split}
 \end{equation}
 
 where $\Lambda(t)$ denotes the integral.
 
-For practical usage, we will discretize the previous equation 
-and add $\tau_m$ boundary, because of assumption of maximal 
-infectious age to be $\tau_m$, and also because of discrete 
-observations:
+This approach was laterly adopted also by \cite{cori2013} where serial 
+interval was used as an approximation of the generation time.
+The approach of \cite{cori2013} was recommended also by \cite{gostic2020},
+and \cite{hasan2020} used different method, however, they confirm the 
+results of \cite{cori2013}.
 
-\begin{equation}
-c_t = \mathcal{R}_e \Lambda_t = \mathcal{R}_e \sum^{\tau_m}_{\tau=0} w(\tau) c(t - \tau)
-\end{equation}
 
-For the sake of simplicity, 
+\section{Summary}
 
-This approach was laterly adopted by \cite{cori2013} where serial 
-interval was used as approximation of the generation time.
-Also \cite{gostic2020} recommends the approach of \cite{cori2013} 
-for the real time $\mathcal{R}_t$ estimation. \cite{knight2020} 
-enhances that approach using generation time obtained from 
-deconvolution of serial interval and incubation period. 
-The method proposed in \cite{hasan2020} uses 
-\textit{extended Kalman filter} with comparable results 
-to \cite{cori2013}.
+In this chapter, the fundaments of epidemiology were established.
+This will be useful in the next chapter, where we will investigate
+the data, so we know now what to look for and how to use it in
+the upcoming modelling.
 
-This model is mentioned due to its employment in this thesis.
 
-As we want to estimate the number of active cases, both the 
-SIR model and Fraser model may be applied. 
-Big disadvantage of SIR model is need to estimate its 
-parameters which may change over time. 
-On the other hand, Fraser model only needs incidence 
-data and serial interval to estimate active cases.
+% For practical usage, we will discretize the previous equation 
+% and add $a_{max}$ boundary, because of assumption of maximal 
+% infectious age to be $a_{max}$, and also because of discrete 
+% observations:
 
-TODO: tune up this chapter!
+% \begin{equation}
+% c_t = \mathcal{R}_t \Lambda_t = \mathcal{R}_t \sum^{a_{max}}_{a=0} \omega(a) c(t - a)
+% \end{equation}
 
-\section{The prevalence estimation}
-
-TODO:
-
+% TODO: For the sake of simplicity, 
 
 
 \chapter{The situation analysis}
 
 The purpose of this chapter is to better understand the situation 
-we want to model and describe the data as available evidence. 
-The modelled infectious disease, Covid-19, is a abbreviated 
+we want to model, describe the data as available evidence, and
+formulate very basic approach, based on the data, which will be 
+developed more thoroughly later.
+
+The modelled infectious disease, \textit{Covid-19}, is an abbreviated 
 term for \textit{coronavirus disease 2019}, the infectious disease 
-caused by SARS-CoV-2 virus. 
+caused by \textit{SARS-CoV-2} virus. 
 In december 2019, it was the first time the virus was spotted, 
 when several patients with pneumonia was hospitalized in the 
 Wuhan, Hubei province in China. 
 After the extraction of virus genome, it was discovered 
 70\% similarity in genetic sequence with SARS-CoV, 
-firstly appeared in China in 2002, the fatality rate 
-was 9.6\% \cite{hui2019}.
-This was ignition for governments to start with mitigation 
+firstly appeared in China in 2002 (the fatality rate 
+was 9.6\%) \cite{hui2019}.
+This was the ignition for governments to start with mitigation 
 actions.
-
 Covid-19 had huge health and economical impact not only in 
-Czechia, but in the whole world. 
-Therefore there are various data sources from around the world. 
-According to the Fraser model, we need incidence data and 
-serial interval.
-The incidence data itself corresponds to the geographical 
-segment of interest which is often part of official reports, 
-but serial interval is usually not.
+Czechia, but in the whole world \cite{maital2020}, because of many victims
+succumb to the diseases, many businesses bankrupt according
+to lockdowns, children were prevented from attending
+school, many people got depression or feel anxiety \cite{khan2020}, etc.
 
 
-\section{Serial interval}
+\section{Available data}
+\label{sec:available-data}
 
-To recall, the \textit{serial interval} (SI) $w$ is a time 
+In general, the model is strong as the input data provided.
+As we want to approximate the risk among Czechia, the most 
+relevant data assumed comes from the official authorities.
+There is a Covid-19 reporting web 
+portal\footnote{\url{https://onemocneni-aktualne.mzcr.cz/}} operated 
+by the Ministry of Healthcare and developed by IHIS CR\footnote{Institute of Health Information and Statistics of the Czech Republic, \url{https://www.uzis.cz/}} 
+and IBA LF MU\footnote{Institute of Biostatistics and Analyses at the Faculty of Medicine of the Masaryk University, \url{http://www.iba.muni.cz/}}, 
+stating National Health Information System (NHIS), Regional Public 
+Health Authorities (RPHAs) and Ministry of Healthcare as its 
+data source. 
+The source is based on the REST API\footnote{See snippet \ref{snip:data-incidence}}, 
+is updated on daily basis and provides several 
+dataframes for various geographical areas across time period $T$.
+The lowest geographical granularity, for which the data are available, 
+is per \textit{district}.
+In the dataset, for each district $u$, the following considerable 
+time series are available:
+\textit{cumulative incidence} $Y_C^u = \{ y_{Ct}^u : t \in T \}$,
+\textit{cumulative restored} $Y_R^u = \{ y_{R t}^u : t \in T \}$,
+\textit{cumulative deceased} $Y_D^u = \{ y_{D t}^u : t \in T \}$.
+
+Now, as we know the available data, we are able to think about 
+proper approach.
+
+
+\section{The data availability based approach}
+
+As was mentioned in the \autoref{chap:risk-as-probability},
+we are primarily looking for the \textit{prevalence} $I$ 
+estimation $\hat{I}$. Moreover, we are now familiar with
+the nature of the data we will work with, so it only remains
+to interconnect the data with the theory from \autoref{chap:epidemiological-prerequisites},
+in the most efficient way.
+
+The most basic model, SIR, is very flexible, but highly dependent 
+on its parametrization.
+Note the WL model (\autoref{sec:wl-model}) and Fraser model
+(\autoref{sec:fraser-model}) are conceived for
+estimating reproduction number rather than prevalence
+(in fact, the prevalence itself is not even present there).
+As none of the previous theoretical models is directly applicable,
+we have to modify them to be able to compute the prevalence
+estimation.
+
+Let recall, the $\omega(a)$ as a serial interval, represents
+a probability density function of transmission across
+the infection age $a$.
+We will denote $\Omega$ the cumulative distribution function
+of this serial interval:
+
+\begin{equation}\label{eq:Omega-int}
+  \Omega(a) = \int_{0}^a \omega(x) dx
+\end{equation}
+
+If we assume the one fictive infector is going to infect
+just one infectee with $100\%$ certainty, at worst, at the
+end of the infector's infection age $a = a_{max}$, then
+$\Omega(a)$ represents a probability the infectee is infected
+in the time less then $a$.
+For our purposes it will be sufficient to invert this probability,
+i.e., $1 - \Omega(a)$, and perceive it as a cumulative distribution
+of infection age. Then we may assume the prevalence $I$ as the sum
+of incidence and the probability the infection remains at its
+age $a$:
+
+\begin{equation}\label{eq:prevalence-int}
+  I(t) = \int_0^{\infty} c(t - a) (1 - \Omega(a)) da
+\end{equation}
+
+When we solve the minimal $a$ such
+that $1 - \Omega(a) = 0$, we obtain infection age $a$ for which
+the infectious individual is not able
+to infect anybody, i.e., the probability of transimission
+is $0$ and infection ends.
+Practically, we are trying to solve:
+
+\begin{equation}
+  a_{max} = \argmin_a \left| 1 - \Omega(a) \right|
+\end{equation}
+
+This can be easily achieved, when we assume some small $\delta$,
+so we have to find minimal $a$ such that $1 - \Omega(a) = \delta$
+to obtain $a_{max}$. This threshold will also help to limit
+computational complexity. Moreover, the data are reported daily
+instead of each specific case, therefore, for practical purposes,
+we can discretize the \eqref{eq:prevalence-int} in this way:
+
+\begin{equation}\label{eq:prevalence-sum}
+  I_t = \sum_{a=0}^{a_{max}} c_{t - a} (1 - \Omega_a)
+\end{equation}
+
+This shifts the problem of finding prevalence $I$ to find
+$c$ and $\Omega$. $\Omega$ from \eqref{eq:Omega-int} can 
+be also discretized:
+
+\begin{equation}
+  \Omega_a = \sum_{j = 1}^a \omega_j
+\end{equation}
+
+where $\omega$ can be obtained from the epidemiological
+studies for the specific disease, Covid-19, in our case.
+Now, lets explore the data more deeply to figure out how
+to obtain $c$ from the observations.
+
+
+
+
+
+
+
+\section{Data analysis}
+
+We need only the incidence observations, therefore, we only
+need to work with $Y_C$.
+As the \autoref{sec:available-data} introduced, the observed time
+series are in the cumulative form.
+To obtain observed incidence $Y_c$,
+we need just to decumulate the original observations:
+
+\begin{equation}
+  Y_{ct} = Y_{C(t + 1)} - Y_{Ct}
+\end{equation}
+
+The observed incidence $Y_c$ for the three largest 
+cities\footnote{In fact, they are districts according to 
+administrative/statistical subdivision, hence the inclusion in the districts datasets} in Czechia, 
+namingly Prague, Brno and Ostrava, looks as 
+follows\footnote{Generated by snippet 
+\ref{snip:data-largest-cities-plot}}:
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=\textwidth]{generated/images/data-largest-cities-plot.png}
+  \end{center}
+  \caption{Observed incidence in the largest cities of Czechia}
+  \label{fig:largest-cities-incidence}
+\end{figure}
+
+From the previous plot, it is obvious the data are overloaded 
+with noise. 
+In the detail view, the weekly seasonal pattern can be observed. 
+In the epidemiology, according to \cite{liu2021} and \cite{annunziato2020}, 
+those oscillations may be associated to different capacities 
+of testing and reporting delays due to the weekend effect. 
+We will assume, this also applies for the Czechia's case of 
+Covid-19 reporting, as \cite{komenda2020} and corresponding web 
+application authors describe the methods how the data are
+being collected and processed.
+
+We have took the 3 largest cities intentionally because they
+are characterized with largest population, and therefore, the 
+highest possible variation in the data, which is most convenient 
+for the proper data analysis.
+
+
+\subsection{Stationarity verification}
+
+As those data correspond to the time series, the stationarity 
+should be verified. 
+This may be done by \textit{Augmented Dickey-Fuller} (\textit{ADF}) 
+test \cite{dickey1979}. 
+In the ADF test, the null hypothesis that a \textit{unit root} is 
+present in a sample. 
+If the unit root is present, the sample is non-stationary. 
+Therefore, the alternative hypothesis is the stationarity of 
+the given sample.
+
+\input{generated/tables/data-adf-test-prague}
+
+In general, \textit{p-value} is the probability that test statistic 
+of unknown distribution has equal or less extreme values 
+than unknown distribution of the sample, assuming \textit{null 
+hypothesis} to be \textit{true}. In simple words, it is the strength 
+of belief in the null hypothesis, in this particular case, the sample is 
+non-stationary. 
+As that value of p-value is higher than $5\% (0.05)$, we fail to reject 
+the null hypothesis, arguing the observed incidence 
+$Y_c^\text{(Prague)}$ was generated by a non-stationary 
+process\footnote{See snippet \ref{snip:data-adf-test-prague}}. 
+Of course, the ADF test should be done for $Y_c^\text{(Brno)}$ 
+and $Y_c^\text{(Ostrava)}$ samples as well, 
+see tables \ref{tab:data-adf-test-brno}, \ref{tab:data-adf-test-ostrava}\footnote{Created by snippet \ref{snip:data-adf-test-brno-ostrava}}.
+The results found have the similar nature, i.e.,
+the time series are non-stationary.
+
+\subsection{Seasonality decomposition}
+\label{sec:seasonality-decomposition}
+
+In the previous subsection, we have found the incidence time 
+series data for the three largest cities are not stationary. 
+This means the specific observations $y_c \in Y_c$ were not 
+generated by the same process, i.e., with a stationary probability
+distribution $p(y_c | t) = p(y_c)$, but with some \textit{dynamic process}. 
+This brings us to go further and analyze the data more precisely. 
+For this purposes, the seasonal decomposition may be applied 
+(see snippet \ref{snip:data-seasonal-decomposition-figure}). 
+This type of decomposition results in structural time series, 
+where the input time series is decomposed into specific 
+components.
+
+In this case, the decomposition is done by computing 7 days
+(according to the weekend effect) 
+two-sided moving average as a trend component $T$, then the 
+seasonal component $S$ and residual $\epsilon$ is inferred. 
+How the components are inferred depends on the selected model 
+of decomposition. There are two considerable types: 
+\textit{additive} and \textit{multiplicative}.
+
+The following figures shows decomposed daily incidence 
+$\Delta C$ to structured time series components. 
+First figure\footnote{Created by snippet \ref{snip:data-seasonal-decomposition-additive}} show the additive decomposition model, 
+formally $Y_c = T + S + \epsilon$:
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=\textwidth]{generated/images/data-seasonal-decomposition-additive.png}
+  \end{center}
+  \caption{Example of additive seasonal decomposition}
+  \label{fig:seasonal-decomposition-additive}
+\end{figure}
+
+Similarly, the second figure\footnote{Created by snippet \ref{snip:data-seasonal-decomposition-multiplicative}}
+shows the multiplicative decomposition, particularly $Y_c = T S \epsilon$:
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=\textwidth]{generated/images/data-seasonal-decomposition-multiplicative.png}
+  \end{center}
+  \caption{Example of multiplicative seasonal decomposition}
+  \label{fig:seasonal-decomposition-multiplicative}
+\end{figure}
+
+From the previous plots, we can see rather the multiplicative 
+relationship, according to residual component $\epsilon$, 
+which distinctly acts more stationary right in the 
+multiplicative model. 
+The multiplicative model imply the variance is proportional 
+to the mean. This effect can be also visually checked  
+in the raw data (figure \ref{fig:largest-cities-incidence}).
+
+To conclude, the data analysis shown multiplicative 
+relationship, rather than additive, between trend, seasonality and residual 
+components in the incidence data. 
+The input data are very noisy and non-stationary, which 
+usually eliminates many simple and fast statistical methods. 
+
+
+% They usually suffer from poor input data, so the data have 
+% to be somehow preprocessed first, otherwise the poor 
+% approximations are produced out of these methods.
+
+
+
+\section{Population data}
+
+For the risk estimation from the hypergeometric distribution
+presented in \autoref{chap:risk-as-probability}, we need a population size 
+$N$ in each investigated district.
+Fortunatelly, this can be easily obtained from the official statistical data.
+In the Czechia, there is 76 districts and the capital city Prague,
+for which the population data can be obtained from the \textit{Czech
+statistical office} (CZSO\footnote{\url{https://www.czso.cz/}}).
+For more details, see snippet \ref{snip:data-node-instances}.
+
+
+\section{Generation time}
+
+% \texorpdfstring{$\omega$}{Lg}
+Sometimes the literature uses \textit{generation time} and \textit{serial interval} interchangeably (\cite{wallinga2004} for example).
+In fact, it is very difficult to find
+proper \textit{generation time} because it is very unlikely to determine
+exact moment the infectee was infected\footnote{For example, \cite{knight2020} 
+uses deconvolution of serial interval and incubation period to obtain generation time.}.
+Instead of that, the symptoms
+are usually more available indicator, therefore, the
+\textit{serial interval} is usually used as an approximation (\cite{griffin2010}, \cite{najafi2020}, \cite{cori2013}).
+
+There is an evidence the Covid-19 has pre-symptomatic 
+transmission \cite{ma2020}, which can even occur more frequently 
+than symptomatic \cite{nishiura2020}.
+According to \cite{du2020} (cited in \cite{knight2020}), the negative serial interval 
+occurred in $12.6\%$ reported cases.
+\cite{oran2020} mentions the approximation of $40\%$ to $45\%$ of 
+infections to be asymptomatic.
+From these findings, we can conclude the probability distribution of the
+generation time of Covid-19 should be mostly distributed in the early
+days of infection age.
+The \cite{knight2020} compares using \textit{generation time} and 
+\textit{serial intervals} (from various authors mentioned also here) 
+to estimate $\mathcal{R}_e$ for Covid-19, where the difference
+presented there is an acceptable bias for us.
+This allows us to use \textit{serial interval} to approximate
+\textit{generation time} while preserving the required precision.
+
+To recall, the \textit{serial interval} (SI) $\omega$ is a time 
 interval between onset symptoms on the infector and the 
 infectee, and may be expressed as a univariate random variable. 
 Although the SI definitely depends on the variant (mutation) of 
 Covid-19, the several SI resources from various time periods are 
-presented to make a better picture of that distribution.
+presented:
 
-\cite{simone2020} assumes serial interval to be gamma 
-distributed, i.e. $w \sim Gamma(\alpha,\beta)$, where 
-$\alpha \sim N \left( 1.87, 0.26^2 \right)$ and 
-$\beta \sim N \left( 0.28, 0.04^2 \right)$ in Italia. 
-\cite{prete2020} proposes $w \sim LogNormal(\mu, \sigma)$ 
-with $\mu = 1.09$ and $\sigma = 0.72$ according to the 
-studies in Brazil. The \cite{knight2020} uses deconvolution 
-to obtain directly generation interval, which we can use 
-as $w$ as well: $w \sim Gamma(\alpha, \beta), \alpha = 1.813, \beta = 2,199$.
-\cite{du2020} proposes normally distributed serial 
-interval with $\mu = 3.96$ and $\sigma = 4.75$. 
-The \cite{nishiura2020} concludes 
-$w \sim LogNormal \left( \mu = 4.7, \sigma = 2.9 \right)$.
+\begin{itemize}
+  \item \textit{Simone} \cite{simone2020} assumes serial interval to be gamma 
+  distributed, i.e. $\omega \sim Gamma(\alpha,\beta)$, where 
+  $\alpha \sim N \left( 1.87, 0.26^2 \right)$ and 
+  $\beta \sim N \left( 0.28, 0.04^2 \right)$ in Italia.
 
-\begin{figure}[h]
+  \item \textit{Prete} \cite{prete2020} proposes $\omega \sim LogNormal(\mu, \sigma)$ 
+  with $\mu = 1.09$ and $\sigma = 0.72$ according to the 
+  studies in Brazil.
+
+  \item \textit{Knight} \cite{knight2020} uses deconvolution 
+  to obtain generation interval: $\omega \sim Gamma(\alpha, \beta), \alpha = 1.813, \beta = 2,199$.
+
+  \item \textit{Du} \cite{du2020} proposes normally distributed serial 
+  interval with $\mu = 3.96$ and $\sigma = 4.75$.
+
+  \item \textit{Nishiura} \cite{nishiura2020} concludes 
+  $\omega \sim LogNormal \left( \mu = 4.7, \sigma = 2.9 \right)$.
+\end{itemize}
+
+Those are presented the following figure\footnote{Created by snippet \ref{snip:data-serial-intervals-overview}}:
+
+\begin{figure}[H]
   \begin{center}
     \includegraphics[width=\textwidth]{generated/images/serial-intervals-overview.png}
   \end{center}
@@ -804,181 +1161,47 @@ $w \sim LogNormal \left( \mu = 4.7, \sigma = 2.9 \right)$.
 The previous serial intervals vary due to spatial and 
 temporal differences in population composition and the
 strain of the virus.
-Those are not suitable for Czech republic. 
-The \textit{National Institute of Public Health} (NIPH)  
-compared Covid-19 to flu\footnote{\url{http://www.szu.cz/tema/prevence/chripka-versus-koronavirus-podobnosti-a-zasadni-rozdily-k-18}}, 
-where flu has average SI 3 days, 
-Covid-19 5-6 days, moreover, the mortality is 30-40x higher.
 From the local research made by \cite{majek2020}, 
 it is estimated the SI of Covid-19 for Czech republic is 4-5 days, which is 
-consistent with \cite{nishiura2020}. 
+stated to be consistent with \cite{nishiura2020}. 
 In the time of writing this thesis, more precise work on the 
 SI of predominant delta mutation could not be found. 
 Therefore we will stick with \cite{majek2020} and 
 \cite{nishiura2020} and assume 
-$w \sim LogNormal \left( \mu = 4.7, \sigma = 2.9 \right)$ 
+$\omega \sim LogNormal \left( \mu = 4.7, \sigma = 2.9 \right)$ 
 as the source of truth. 
 
-According the chart above, we can put upper limit of the 
-infection age $\tau_m$ to $15$ days.
+% According to the chart above, we can put upper limit of the 
+% infection age $a_{max}$ to $15$ days.
 
-\section{Available data}
+\section{Summary}
 
-In general, the model is strong as the input data provided.
-For epidemic modelling purposes, the most relevant data 
-assumed comes from the official authorities.
-For the Czech republic, there is a Covid-19 reporting web 
-portal\footnote{\url{https://onemocneni-aktualne.mzcr.cz/}} operated 
-by the Ministry of Healthcare and developed by IHIS CR\footnote{Institute of Health Information and Statistics of the Czech Republic, \url{https://www.uzis.cz/}} 
-and IBA LF MU\footnote{Institute of Biostatistics and Analyses at the Faculty of Medicine of the Masaryk University, \url{http://www.iba.muni.cz/}}, 
-stating National Health Information System (NHIS), Regional Public 
-Health Authorities (RPHAs) and Ministry of Healthcare as its 
-data source. 
-The source is updated on the daily basis and provides several 
-dataframes with lowest geographical granularity per district.
+In this chapter, the situation was analyzed.
+This means, we investigated the available
+epidemic data, population data and available
+serial interval to use as a generation time $\omega$.
+We also derived the formula for prevalence calculation,
+which depends on incidence $c$ and $\omega$.
 
-This data will allow us to compute the risk for each district 
-with respect to the chosen serial interval. 
-For the modelling the risk, we also need a total population 
-$N$ in each investigated district.
-In the Czechia, there is 76 districts and the capital city Prague. 
-Each district (and Prague) can be uniquely identified by its 
-Local administrative unit (LAU) code. 
-This will allow us to map it with the official population 
-statistics\footnote{\url{https://www.czso.cz/csu/czso/pocet-obyvatel-v-obcich-k-112021}}.
-
-The observed incidence $Y$ for the three largest 
-cities in Czechia, namingly Prague, Brno and Ostrava, looks as 
-follows:
-
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[width=\textwidth]{generated/images/largest-cities-incidence.png}
-  \end{center}
-  \caption{Observed incidence in the largest cities of Czechia}
-  \label{fig:largest-cities-incidence}
-\end{figure}
-
-
-\section{Data analysis}
-
-From the previous plot, it is obvious the data are overloaded 
-with noise. 
-In the detail view, the weekly seasonal pattern can be observed. 
-In the epidemiology, according to \cite{liu2021} and \cite{annunziato2020}, 
-those oscillations may be associated to the different capacities 
-of testing and reporting delays due to weekends. 
-We will assume, this also applies for the Czechia's case of 
-Covid-19 reporting, as \cite{komenda2020} and corresponding web 
-application authors describe the methods how the data are
-collected and processed.
-
-
-\subsection{Stationarity verification}
-
-As those data correspond to the time series, the stationarity 
-should be verified. 
-This may be done by Augmented Dickey-Fuller (ADF) test. 
-In the  ADF test, the null hypothesis that a unit root is 
-present in a sample. 
-If the unit root is present, the sample is non-stationary. 
-Alternative hypothesis is, therefore, the stationarity of 
-the given sample.
-
-\input{generated/tables/adf_test_prague}
-
-In general, p-value is the probability that test statistic 
-of unknown distribution has equal or less extreme values 
-than unknown distribution of the sample, assuming null 
-hypothesis to be true. In simple words, it is the strength 
-of belief in the null hypothesis, that the sample is 
-non-stationary. 
-As that value of p-value is higher than $5\%$, we fail to reject 
-the null hypothesis, arguing the observed incidence 
-$\Delta C_{\text{Prague}}$ was generated by a non-stationary 
-process. 
-Of course, the ADF test should be done for $\Delta C_{\text{Brno}}$ 
-and $\Delta C_{\text{Ostrava}}$ samples as well, 
-see tables \ref{tab:adf-test-brno}, \ref{tab:adf-test-ostrava}.
-The results found have the similar nature, i.e.
-the time series are non-stationary.
-
-\subsection{Seasonality decomposition}
-
-In the previous subsection, we have found the incidence time 
-series data, for the three largest cities, are not stationary. 
-This means the specific $\Delta C_i$ was not generated by the 
-process with a constant probability distribution over time. 
-This brings us to go further and analyze data more precisely. 
-For this purposes, the seasonal decomposition may be applied. 
-This type of decomposition results in structural time series, 
-where the input time series is decomposed into specific 
-components.
-
-In this case, the decomposition is done by computing 7 days 
-two-sided moving average as a trend component $T$, then the 
-seasonal component $S$ and residual $\epsilon$ is inferred. 
-How the components are inferred depends on the selected model 
-of decomposition. There are two considerable types: 
-\textit{additive} and \textit{multiplicative}.
-
-The following figures shows decomposed daily incidence 
-$\Delta C$ to structured time series components. 
-First figure show the additive decomposition model, 
-formally $\Delta C = T + S + \epsilon$:
-
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[width=\textwidth]{generated/images/seasonal-decomposition-additive.png}
-  \end{center}
-  \caption{Example of additive seasonal decomposition}
-  \label{fig:seasonal-decomposition-additive}
-\end{figure}
-
-Similarly, the second figure shows the multiplicative 
-decomposition, particularly $\Delta C = T S \epsilon$:
-
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[width=\textwidth]{generated/images/seasonal-decomposition-multiplicative.png}
-  \end{center}
-  \caption{Example of multiplicative seasonal decomposition}
-  \label{fig:seasonal-decomposition-multiplicative}
-\end{figure}
-
-From the previous plots, we can see rather the multiplicative 
-relationship, according to residual component $\epsilon$, 
-which distinctly acts more stationary right in the 
-multiplicative model. 
-The multiplicative model imply the variance is dependent 
-on the mean. This effect can be, after all, also seen 
-in the raw source data.
-
-To conclude, the data analysis shown multiplicative 
-relationship between trend, seasonality and residual 
-components in the incidence data. 
-The input data are very noisy and non-stationary, which 
-usually eliminates many well-known deterministic, therefore 
-fast, statistical methods. 
-They usually suffer from poor input data, so the data have 
-to be somehow preprocessed first, otherwise the poor 
-approximations are produced out of these methods.
-
-The noisiness in the data can be overcome by using 
+For now, the only problem is the incidence $c$,
+for whom the observed values $Y_c$ are available.
+There is a huge noisiness in the data, which can be overcomed by using 
 smoothing techniques.
-\cite{elmousalami2020} compares moving average, weighted 
+
+\cite{elmousalami2020} compares deterministic
+methods as the moving average, weighted 
 moving average, single exponential smoothing for 
 forecasting Covid-19, while these methods may be used 
-for smoothing too. 
-Downside is loss of information about uncertainty by using 
-those methods. 
-Also \cite{annunziato2020} draws attention to use smoothing 
-methods carefuly as some oscillations may still remain in 
-the input data, thus the risk may be estimated imprecisely.
+for smoothing too. \cite{annunziato2020} draws attention to use smoothing 
+methods carefuly as some oscillations might still remain in 
+the input data from the improper data collection.
 
-To overcome previous issues, the thesis offers the robust 
-probabilistic solution.
-
+Therefore, it is very important to devote sufficient
+amount of time to choose proper smoothing technique.
+The next chapter is dedicated to the inference of
+incidence estimation $\hat{c}$ from the observed 
+incidence $Y_c$, i.e., denoise/smoothen $Y_c$ to $\hat{c}$, called
+\textit{the incidence model}.
 
 
 \chapter{The incidence model}
@@ -998,18 +1221,19 @@ variable around its mean.
 In the probabilistic approach, the value is represented 
 by its probability distribution, so the idea about 
 certainty in the value of variable is available. 
-The probabilistic modelling is based on the Bayesian 
-way of thiking.
+The probabilistic modelling is based mostly
+on the Bayesian approach.
 
-\section{The Bayesian approach}
+
+\section{Bayesian approach}
 
 The Bayesian way of thinking is more similar to how human 
-brain works in contrary to the frequentistic approach. 
-Usually, we, as humans, have some prior belief about some 
+brain works, in contrary to the frequentistic approach. 
+Usually, we as humans, have some prior belief about some 
 unknown quantity or event, and whenever we obtain new 
 evidence, we update our belief forming the posterior, such 
 that the next time we obtain new evidence, this posterior 
-is used as a new prior, etc. 
+is used as a new prior, and so forth, in this recursive approach.
 Technically, everytime someone asks us about or opinion 
 about the quantity, we are expressing our latest posterior 
 about that quantity. 
@@ -1034,7 +1258,7 @@ Therefore it practically better fits situations with
 less data available.
 
 Formally, let $X$ be a random variable representing 
-the unknown quantity and $Y$ the random variable for 
+the unknown quantity of interest and $Y$ random variable for 
 the observed quantity, therefore we can express $p(X)$ 
 as a prior distribution of the unknown quantity and 
 $p(Y)$ as a probability distribution of evidence. 
@@ -1042,65 +1266,84 @@ Posterior distribution can be expressed in terms of
 conditional probability such that $p(X | Y)$, meaning 
 what is the probability distribution of $X$ given we 
 know/observe $Y$. 
-This posterior can be obtained using the Bayes 
-theorem:
+This posterior can be obtained using the \textit{Bayes 
+theorem}:
 
-FIXME: place nice pic here instead of this
-
-\begin{equation}
+\begin{equation}\label{eq:bayes-theorem}
 p( X | Y ) = \frac{p( Y | X ) p(X)}{p(Y)}
 \end{equation}
 
-where the $p( Y | X )$ is called the *likelihood*. 
-Note the likelihood is reverse to posterior, i.e. it 
-is a probability distribution of evidence given the 
-knowledge of $X$. 
-In practice, it is hard to think about/ express the 
-probability distribution of evidence $p(Y)$, it would 
-mean we can somehow obtain all possible evidence, which 
+where the $p( Y | X )$ is called the \textit{likelihood}.
+Note the likelihood is reverse to posterior, i.e., it 
+is a probability distribution of evidence given the $X$.
+In practice, probability distribution of evidence $p(Y)$ 
 is usually not available. 
 Instead of this, the $p(Y)$ can be obtained by 
 marginalization over the $X$, referred as a 
-\textit{normalizing constant}:
+\textit{normalizing constant} or \textit{marginal likelihood}:
 
-\begin{equation}
-p(Y) = \int p( Y | X ) p(X) dX
+\begin{equation}\label{eq:bayes-normalizing-const}
+  p(Y) = \int_\mathcal{X} p( Y | X ) p(X) dX
 \end{equation}
 
-Unfortunatelly, the integral is usually not easily 
-analytically tractable. 
-This makes the Bayesian approach quite complex, 
-however, during last decades, there was a huge leap 
-in development of methods capable of solving this 
-(both deterministically and stochastically). 
-Choosing the proper solving method depends on the 
-defined model, so let's start with the model first.
+where $\mathcal{X}$ is a domain of $X$.
+
+Unfortunatelly, the integral in 
+\eqref{eq:bayes-normalizing-const} is not usually
+easily analytically tractable.
+This makes the Bayesian approach a quite more
+complex than frequentistic's, 
+however, during the last decades, there was a huge leap 
+in development of inferential methods capable to
+overcome this problem (more in \autoref{sec:monte-carlo}). 
+Choosing the proper method depends on the 
+defined model \cite{pfeffer2016}, so it will be 
+convenient to begin with the probabilistic
+incidence model first.
 
 
-\section{The probabilistic model}
+In the terms of the Bayes theorem \eqref{eq:bayes-theorem},
+$Y$ will be represented just by the observed incidence $Y_c$, and
+$X$ will represent the set of internal parameters to infer.
+Moreover, we assume also a set of hyperparameters $Z$ such that
+the Bayes theorem can be rewritten as:
 
-\subsection{Likelihood}
+\begin{equation}\label{eq:bayes-theorem-customized}
+  p( X | Y_c, Z ) = \zeta^{-1} p( Y_c | X ) p(X | Z)
+\end{equation}
+
+where $\zeta$ is the \textit{normalizing constant} as
+defined in \eqref{eq:bayes-normalizing-const},
+$p(X | Z)$ is prior, and $p( Y_c | X )$ is a likelihood.
+To define prior, we have to know the parameter set $X$, which
+depends on the likelihood probability, so lets define 
+the likelihood first.
+
+
+\section{The likelihood}
 
 As the daily incidence is discrete count variable, 
-therefore the discrete probabilistic distributions are 
+the discrete probabilistic distributions are 
 considerable as a likelihood. One of the first suggestions 
-might be the \textit{Poisson} distribution. Unfortunatelly, random 
+might be the \textit{Poisson distribution}. Unfortunatelly, random 
 variable $X$ following the Poisson distribution with 
 parameter $\lambda$ has very strong assumption 
 $\lambda = \mathbb{E}\left[ X \right] = \mathbb{V}\left[ X \right]$, 
 which may not be always hold for the input data. 
 
-This is also the our case. 
+This is also the our case, as the 
+figure \ref{fig:largest-cities-incidence} shown. 
 For this reason, the \textit{negative binomial distribution} can 
 be used as the two-parameter substitute for 
 one-parameter Poisson distribution to better 
 handle overdispersion in the data, similarly 
 as \cite{simone2020}, \cite{wallinga2004}, 
 \cite{alzahrani2018} and \cite{manevski2020} did.
-The following will be our desirable likelihood:
+The following will be, therefore, our
+desirable likelihood:
 
 \begin{equation}
-c \sim NegBin\left( \mu, \alpha \right)
+y_c \sim \text{NegBin}\left( \mu, \alpha \right)
 \end{equation}
 
 Usually, the negative binomial distribution is 
@@ -1116,32 +1359,31 @@ Then, the probability mass function of such
 negative binomial distribution is following:
 
 \begin{equation}
-f \left( x; \mu, \alpha \right) = \frac{\Gamma \left( \alpha + x \right) }{x! \Gamma \left( \alpha \right)} \left( \frac{\alpha}{\mu + \alpha} \right)^{\alpha} \left( \frac{\mu}{\mu + \alpha} \right)^{x}
+f \left( y_c; \mu, \alpha \right) = \frac{\Gamma \left( \alpha + y_c \right) }{y_c! \Gamma \left( \alpha \right)} \left( \frac{\alpha}{\mu + \alpha} \right)^{\alpha} \left( \frac{\mu}{\mu + \alpha} \right)^{y_c}
 \end{equation}
 
-where $\mu = \frac{pr}{1-p}, \mu \geq 0$ and 
+where $\mu = \frac{pr}{1-p}, \mu \geq 0$ corresponds to mean and 
 $\Gamma$ is the \textit{gamma function}. 
 First parameter of the prior Gamma distribution 
-$\alpha = r$ is assumed exponentially distributed:
+$\alpha = r$ is assumed to be distributed exponentially:
 
-\begin{equation}
-	\alpha \sim Exponential \left( \lambda_{\alpha} \right)
+\begin{equation}\label{eq:alpha-prior}
+	\alpha \sim \text{Exponential} \left( \lambda_{\alpha} \right)
 \end{equation}
 
-TODO: fix notation
-
-\begin{equation}
-p(\hat{c}|y) \propto p(y|\alpha, \theta, a, b) p(\alpha) p(\theta) p(a) p(b)
-\end{equation}
+The exponential distribution is chosen for a purpose,
+it has highest probability in zero, therefore, we assume the most
+mass will be concentrated around the mean $\mu$.
 
 As the previous analysis shown significant 
-correlation between mean and variance, the 
-logarithmic transformation may be applied, 
-formally $log\left( \mu \right) = \theta$. 
-The following plot show the original data 
-before and after the logarithmic transformation:
+correlation between mean and variance, and the seasonal decomposition 
+in \autoref{sec:seasonality-decomposition} shown rather the 
+multiplicative effect between trend, seasonal component and residual, the 
+logarithmic transformation $\log \left( \mu \right) = \theta$ is considered \cite{cialdella2020}.
+The following plot shows the original data 
+before and after the logarithmic transformation\footnote{Created by snippet \ref{snip:incidence-log-transform-plot}}:
 
-\begin{figure}[h]
+\begin{figure}[H]
   \begin{center}
     \includegraphics[width=\textwidth]{generated/images/incidence-log-transform.png}
   \end{center}
@@ -1149,72 +1391,73 @@ before and after the logarithmic transformation:
   \label{fig:incidence-log-transform}
 \end{figure}
 
+Moreover, the transformed trends are now 
+linear, which implies the exponential growth in the original data.
+The likelihood can be finally defined as:
 
-\subsection{The analysis of \texorpdfstring{$\theta$}{Lg}}
+\begin{equation}\label{eq:likelihood-first}
+  p( y_c | \theta, \alpha )
+\end{equation}
 
-After the transformation, $\theta$ is no 
-longer discrete random variable, rather 
-continous, but, as the figure shown, it 
-is more homoscedastic, which is more 
+The prior for $\alpha$ was already stated by \eqref{eq:alpha-prior}.
+The $\theta$ requires further introspection to choose proper prior.
+
+
+\section{The analysis of \texorpdfstring{$\theta$}{Lg}}
+
+After the transformation, $\theta \in \mathbb{R}$, but, 
+as the figure \ref{fig:incidence-log-transform} 
+shown, $\theta$ is more homoscedastic random variable, which is 
 convenient, because the more homoscedatic 
-the random variable is, the more constant variance 
-it has. 
-This can be verified by detrending/decumulation 
-of the $\theta$, to obtain differences 
-$\Delta \theta$ with succesive application of 
+the r.v. is, the more constant variance 
+it has.
+This can be verified by first-order detrending/decumulation\footnote{See snippet \ref{snip:theta-diff-plot}} 
+of $\theta$, to obtain differences 
+$\Delta \theta$, with succesive application of 
 $\Delta \theta_t = \theta_{t+1} - \theta_{t}$:
 
-\begin{figure}[h]
+\begin{figure}[H]
   \begin{center}
-    \includegraphics[width=\textwidth]{generated/images/theta-diff-figure.png}
+    \includegraphics[width=11cm]{generated/images/theta-diff.png}
   \end{center}
   \caption{The plot of $\Delta \theta$}
   \label{fig:theta-diff}
 \end{figure}
 
 Naturally, we could check normality of the 
-whole data, but practically, we work just in 
-specific time windows, therefore it will be 
-more meaningful to verify normality for those 
+whole data, but practically, we will use just 
+specific time windows of size $T_w$, in which, the normality of the data will be assumed,
+therefore it will be more meaningful to verify normality for those 
 windows. In our case, we picked three samples 
-of time window as the following figure presents:
+of time window $T_w = 50$ as the following figure 
+presents\footnote{Created by snippet \ref{snip:theta-diff-sample-windows-plot}}:
 
-\begin{figure}[h]
+\begin{figure}[H]
   \begin{center}
-    \includegraphics[width=\textwidth]{generated/images/theta-sample-windows.png}
+    \includegraphics[width=11cm]{generated/images/theta-diff-sample-windows.png}
   \end{center}
   \caption{The referenced windows for taking samples of $\Delta \theta$}
   \label{fig:theta-sample-windows}
 \end{figure}
 
+This means, for the inference of incidence up to time $t$, 
+we will assume data only from interval $[t - T_w, t]$, i.e.,
+assuming each sample from time period less than
+$t - T_w$ is irrelevant.
+This will also help to reduce computational complexity.
+
 Let's explore the distribution of those samples 
 for confirmation of normality. 
 For visual testing of normality, histogram, 
 Q-Q and ECDF/CDF plots may be considered. 
-Let's start with histograms:
+Let's start with histograms\footnote{Created by snippet \ref{snip:theta-diff-histogram}}:
 
-\begin{figure}[h]
+\begin{figure}[H]
   \begin{center}
-    \includegraphics[width=\textwidth]{generated/images/theta-diff-histogram.png}
+    \includegraphics[width=11cm]{generated/images/theta-diff-histogram.png}
   \end{center}
   \caption{The histogram of chosen $\Delta \theta$ samples}
   \label{fig:theta-diff-histogram}
-\end{figure}
-
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[width=\textwidth]{generated/images/theta-diff-qq.png}
-  \end{center}
-  \caption{Quantile-Quantile plot of $\Delta \theta$ samples}
-  \label{fig:theta-diff-qq}
-\end{figure}
-
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[width=\textwidth]{generated/images/theta-diff-ecdf.png}
-  \end{center}
-  \caption{Empirical CDF of $\Delta \theta$ samples}
-  \label{fig:theta-diff-ecdf}
 \end{figure}
 
 From the histogram, the normality is not 
@@ -1230,26 +1473,43 @@ oversee gaps in the data.
 The Q-Q plot is better in this way, because 
 it can be assumed as a non-parametric 
 visualisation, moreover, we see how all data 
-points fit to the normal distribution:
+points fit to the normal distribution\footnote{Created by snippet \ref{snip:theta-diff-qq-plot}}:
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=11cm]{generated/images/theta-diff-qq.png}
+  \end{center}
+  \caption{Quantile-Quantile plot of $\Delta \theta$ samples}
+  \label{fig:theta-diff-qq}
+\end{figure}
+
 
 This may finally remind the normally distributed 
 data, because closer the points are to the line, 
 the more normal distribution is approached in 
 the data.
 
-The next plot visualizes the 
+The next plot\footnote{Created by snippet \ref{snip:theta-diff-ecdf-plot}} visualizes the 
 \textit{empirical cumulative distribution function}
-(ECDF) based on $\theta$ and CDF for the 
+(ECDF) based on $\Delta \theta$ and CDF for the 
 theoretical normal distribution based on 
-the summary statistics of $\theta$.
+the summary statistics of $\Delta \theta$:
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=11cm]{generated/images/theta-diff-ecdf.png}
+  \end{center}
+  \caption{Empirical and theoretical CDFs of $\Delta \theta$ samples}
+  \label{fig:theta-diff-ecdf}
+\end{figure}
 
 The previous visuals might evoke normally 
 distributed data for some individuals, but 
-visual check might be misleading, therefore 
+visual check might be misleading, therefore, 
 it should not be sufficient for statistical 
 modelling. Instead of visual check, the 
-tatistics provides several non-parametric 
-normality tests. For the purpose of normality 
+statistics provides several non-parametric 
+normality tests. For the purpose of statistical normality 
 testing, Kolmogorov-Smirnov, Lilliefors and 
 Shapiro-Wilk tests were performed.
 
@@ -1259,9 +1519,7 @@ Shapiro-Wilk tests were performed.
 
 The strongest result is noted in the 
 Lilliefors test, then Shapiro-Wilk test and 
-worst result is from Kolmogorov-Smirnov test, 
-which, lead even to accepting alternative 
-hypothesis about non-normally distributed data. 
+worst result is from Kolmogorov-Smirnov test.
 The research of \cite{razali2011} concludes the 
 Shapiro-Wilk test to be the most powerful 
 normality test and the Kolmogorov-Smirnov test 
@@ -1269,57 +1527,84 @@ to the least powerful (Kolmogorov-Smirnov,
 Shapiro-Wilk, Anderson-Darling and Lilliefors 
 tests were compared). 
 According to this research and the fact we 
-use limiting infection age $\tau_m$, the 
+use limiting infection age $a_{max}$, the 
 assumption about normally distributed $\theta$ 
 can be made.
-
-To recall, the normality assumption was made 
-on the differences $\Delta \theta$, when trend 
-was removed by decumulation, but what we need 
-is to model prior distribution for the original 
-$\theta$, where trend is present. 
-This means, for each $\theta_t$ in specific 
-time window, the normal distribution may differ 
-in its parameters across the time 
-$\theta_t \sim N(\mu_t, \sigma_t)$. 
-Therefore we can model prior for $\theta$ as a 
-\textit{Gaussain process}:
-
-\begin{equation}
-\theta \sim GP \left( m \left( x \right), k \left( x, x' \right) \right)
-\end{equation}
+Moreover, as the $\theta$ is actually function of time $\theta(t)$,
+we can model its prior as a \textit{Gaussian process}.
+Let us introduce theory for Gaussian processes in the
+following section, then we will continue
+with the prior for $\theta$ in the following section.
 
 
+\section{Gaussian process}
 
-\subsection{The \texorpdfstring{$\theta$}{Lg} as a Gaussian process}
-
-Generally speaking, Gaussian process 
-\cite{rasmussen2004} is a finite set of random 
-variables 
-$X = (x_1, x_2, \dots, x_n) \in \mathcal{X}^n$ 
-corresponding to the multivariate normal 
-distribution defined as:
+Gaussian process (GP) is a stochastic process that is used to directly infer
+from data over finite set of functions.
+Basically, it is a probability distribution over set of
+functions which follow \textit{joint (multivariate) Gaussian
+distribution} \cite{frigola2015}:
 
 \begin{equation}
-X \sim MN \left( m \left( x \right), k \left( x, x' \right) \right)
+  p\left(
+    \begin{bmatrix}
+      f(x_i) \\ f(x_j) \\ f(x_k) \\ \vdots
+    \end{bmatrix}
+  \right) = N\left(
+    \begin{bmatrix}
+      m(x_i) \\ m(x_j) \\ m(x_k) \\ \vdots
+    \end{bmatrix},
+    \begin{bmatrix}
+      k(x_i, x_i) & k(x_i, x_j) & k(x_i, x_k) & \cdots \\ 
+      k(x_j, x_i) & k(x_j, x_j) & k(x_j, x_k) & \cdots \\ 
+      k(x_k, x_i) & k(x_k, x_j) & k(x_k, x_k) & \cdots \\ 
+      \vdots & \vdots & \vdots & \ddots 
+    \end{bmatrix}
+  \right)
 \end{equation}
 
-where $m$ is the \textit{mean function} and $k$ is the 
-\textit{kernel function}. 
-The mean function 
-$m : \mathcal{X} \to \mathcal{R}$ captures the 
-trend in the data for the point $x$ and the 
-kernel function 
-$k : \mathcal{X} \times \mathcal{X} \to \mathcal{R}^{+}$ 
-is actually \textit{Mercer kernel}, also called 
+For simplicity, we denote previous as:
+
+\begin{equation}
+  f(x) \sim GP \left( m \left( x \right), k \left( x, x' \right) \right)
+\end{equation}
+
+where $m \left( x \right)$ and $k\left( x, x' \right)$ are 
+the specifying\footnote{GP is specified only with these two functions} mean and
+covariance functions respectively.
+For those functions the following apply \cite{rasmussen2004}:
+
+\begin{equation}
+\begin{split}
+  & m(x) = \mathbb{E} \left[ f(x) \right] \\
+  & k \left( x, x' \right) = \mathbb{E} \left[ 
+    \left( f \left( x \right) - m \left( x \right) \right)
+    \left( f \left( x' \right) - m \left( x' \right) \right)
+  \right]
+\end{split}
+\end{equation}
+
+The mean function, in most cases, is zero function,
+mean of the observations, or linear function.
+In most cases, if we have minimal knowledge of approximated function,
+zero function $m(x) = 0$ is considered.
+
+The covariance function is often called 
+\textit{kernel function} which is actually \textit{Mercer kernel}, also called 
 \textit{positive-definite kernel} \cite{murphy2021}, 
 measuring how two inputs $x$ and $x'$ are similar. 
 This requires the kernel to be symmetric, i.e. 
 $k \left( x, x' \right) = k \left( x', x \right)$.
+These kind of function are also called
+\textit{smoothing functions/kernels} \cite{martin2016}.
 
-For the sake of simplicity, we will assume linear 
-trend between datapoints, therefore function 
-$m$ will be like:
+Now back to the GP prior for $\theta$.
+
+\section{The prior of \texorpdfstring{$\theta$}{Lg}}
+
+According to the figure \ref{fig:incidence-log-transform}\footnote{Created by snippet \ref{snip:incidence-log-transform-plot}}, 
+the linear trend between points should be sufficient, 
+therefore let $m$ be defined as:
 
 \begin{equation}
 m(x) = b + a x
@@ -1329,17 +1614,28 @@ where the prior distributions for $a$ and $b$
 are assumed 
 $a \sim N \left( \mu_a, \sigma_a \right)$ and 
 $b \sim N \left( \mu_b, \sigma_b \right)$.
+Someone may argue why there is no restriction such as
+$a \geq 0$, but if $\theta < 0$, then $0 \leq e^{\theta} < 1$, 
+which are still valid values for the $\mu$ parameter
+of our likelihood.
+Basically, we let the $\theta_t$ to move
+free in its whole space $\mathbb{R}$, because the
+exponential transformation always keeps $\mu \geq 0$.
 
-The most widely used kernel is \textit{Gaussian kernel}, 
+Covariance matrix can be expressed (generalized)
+as a function,
+
+The most basic kernel is \textit{Gaussian kernel}, 
 also called \textit{squared exponential kernel} or 
-\textit{radial basis function (RBF) kernel} defined as:
+\textit{radial basis function (RBF) kernel} defined as
+(for univariate observations):
 
 \begin{equation}
-k_{RBF} \left( x, x'; \ell \right) = exp \left[ -\frac{(x - x')^2}{2\ell^2} \right]
+K_{RBF} \left( x, x'; \ell \right) = \exp \left[ -\frac{(x - x')^2}{2\ell^2} \right]
 \end{equation}
 
 where $\ell$ is the \textit{length scale} hyperparameter, 
-known also as \textit{bandwidth}. 
+known also as \textit{bandwidth} (denoted $\sigma$ in some literature). 
 This hyperparameter is distance which we expect 
 differences to matter.
 
@@ -1348,6 +1644,7 @@ TODO: properties of this kernel and reason why it is used here
 
 
 \section{Monte Carlo simulation}
+\label{sec:monte-carlo}
 
 Simulation itself is relatively old technique for 
 solving analytically intractable problems. 
@@ -1365,15 +1662,31 @@ the intersections to calculate probability
 in a frequentistic way.
 
 A huge development in simulation techniques 
-came with the development of computers, 
+naturally came with the development of computers, 
 especially during the Los Alamos research 
 \cite{metropolis1987}, where 
 \textit{Monte Carlo simulation} was invented to 
-solve nuclear fission problem - Stan Ulam 
-came up with an idea of Monte Carlo simulation, 
-John von Neumann with the machine and 
-Nicolas Metropolis with the algorithm described 
-further.
+solve nuclear fission problem.
+
+The whole idea started when Stan Ulam\footnote{\url{https://cs.wikipedia.org/wiki/Stanis\%C5\%82aw_Ulam}} was
+trying to compute odds in solitaire.
+He tried to solve the problem analytically, but he later
+realized the problem could be solved in much simplier way,
+just by uniformly sampling layouts of cards in hand and
+and counting the number of successful games.
+This is how the \textit{random sampling} 
+(sometimes referred as \textit{crude Monte Carlo}) was born.
+
+John von Neumann\footnote{\url{https://cs.wikipedia.org/wiki/John_von_Neumann}}
+was interested in the Stan's idea. He saw a big potential for
+solving untractable problems in physics.
+Unfortunatelly, in physics, there are many problems where
+we know some distributions in theory but they are difficult
+to sample from, so he later invented 
+\textit{rejection sampling} \cite{beichl2000}, which 
+was a foundation for the future development of 
+Monte Carlo techniques.
+
 In fact, the name Monte Carlo refers to the city 
 in Monaco, which is famous for its casinos. 
 In the casinos, generally, the probability and 
@@ -1381,29 +1694,39 @@ randomness together plays big role, just like in the
 Monte Carlo simulation.
 
 Monte Carlo methods can be used for various 
-purposes. 
-Most common usage is to estimate the value of 
-unknown quantity in terms of inferential 
-statistics, meaning the quantity which is not 
-directly observable from data.
+purposes, mostly used for integration and
+optimizations problems,
+for example, in the Bayesian inference is used for \cite{andrieu2003}:
 
-FIXME: rewrite this part
+\begin{itemize}
+  \item \textit{Normalization} - computing posterior $p(x | y)$ from:
+    \begin{equation}
+      p(x | y) = \frac{p(y | x) p(x)}{\int_{\mathcal{X}} p(y | x^\prime) p(x^\prime) dx^\prime}
+    \end{equation} \\
+    where the denominator is the normalizing constant $\zeta$ which is usually intractable.
+  \item \textit{Maginalization} - computing marginal probability $p(y)$ from the joint distribution $p(x, y)$:
+    \begin{equation}
+      p(y) = \int_{\mathcal{X}} p(x, y) dx
+    \end{equation} \\
+    This is basically just a subtask of the normalization mentioned before.
+  \item \textit{Expectation} - to calculate expected value as in \eqref{eq:random-sampling-expectation}
+\end{itemize}
 
-Most common is the \textit{Monte Carlo integration}, 
-i.e. solving analytically intractable integral 
-by Monte Carlo techniques. 
+\subsection{Random sampling}
+
 Let's imagine we have a random variable 
 $x \in \mathcal{X}$ distributed according to 
-$\pi$ and we are interested in its expected 
-value $\mathbb{E}_{\pi}$. 
-The usuall approach would be:
+$p$ and we are interested in its expected 
+value $\mathbb{E}_p$. 
+The usual approach would be:
 
-\begin{equation}
-\mathbb{E}_{\pi}\left[ f(x) \right] = \int_{\mathcal{X}} \pi \left( x \right) f \left( x \right) dx
+\begin{equation}\label{eq:random-sampling-expectation}
+  \mathbb{E}_{p}\left[ f(x) \right] = \int_{\mathcal{X}} p \left( x \right) f \left( x \right) dx
 \end{equation}
 
-But in many cases, the $\pi$ is not directly 
-observable (we do not have all the possible data). 
+But in many cases, the $p$ is not directly 
+observable, as we usually do not have all the 
+possible data.
 The Monte Carlo may approach this value by 
 generating $n$ independent identically distributed 
 random samples $x_i$ (if sampling from $f$ is 
@@ -1411,7 +1734,7 @@ possible) from domain $\mathcal{X}$ to form a
 sample mean of that unknown quantity:
 
 \begin{equation}
-\hat{\mu}_n = \frac{1}{n} \sum_{i=1}^{n} f \left( x_i \right)
+  \hat{\mu}_n = \frac{1}{n} \sum_{i=1}^{n} f_{x_i}
 \end{equation}
 
 According to the unknown quantity above, this 
@@ -1425,191 +1748,338 @@ $\hat{\mu}_n \approx \mathbb{E}_{\pi}\left[ f(x) \right]$.
 
 In this approach, the samples are trully 
 random meaning independent of each other, 
-therefore it is often called 
-\textit{random sampling}. 
-The main pitfall in random sampling is its 
-inefficiency, i.e. slow convergence in terms 
-of computational efficiency, moreover, we 
+hence the name \textit{random sampling}.
+The main pitfall of random sampling is its 
+computationally inefficiency, i.e., we 
 need $n$ to be a very large number to be 
 sure the samples sufficiently cover 
-$\mathcal{X}$, even for high unprobable values. 
-Fortunatelly, by years, several algorithms 
-solving this issue were invented. 
-In particular, most referred methods are 
-so-called \textit{Markov chain Monte Carlo} (MCMC) 
-methods.
+$\mathcal{X}$, even for highly unprobable
+values of $x_i$, i.e., $\pi(x_i) \approx 0$.
 
 
-\subsection{Markov Chain Monte Carlo}
+\subsection{Rejection sampling}
+\label{sec:rejection-sampling}
 
-Markov Chain Monte Carlo (MCMC) is a class of 
-algorithms solving problem with sampling from a 
-\textit{target probability distribution} in more 
-efficient way. 
-Basic principle is to random walk through 
-distribution similarly as random sampling 
-does, moreover, samples follow the values 
-from areas with higher probabilities which is 
-done using the Markov Chain as some kind 
-of short-term memory. 
-The probability of samples generated by 
-MCMC methods are proprotional to the the 
-probabilities of the target distribution in 
-the long run of particular Markov chain, 
-therefore, we can rewrite Bayes theorem to:
+In rejection sampling, the basic assumption is we have \textit{target
+probability distribution} $f$ for which we want to estimate
+some quantity. Unfortunatelly, we are not able to sample
+from $f$ or the sampling is somehow complicated.
+Rejection sampling overcoming this by sampling
+from other, related to the $f$ and easy to sample from, 
+\textit{proposal distribution} $g$.
+The algorithm proceeds as follows \cite{beichl2000}:
 
-\begin{equation}
-p( X | Y ) \propto p( Y | X ) p(X) \Rightarrow p( X | Y ) = \alpha p( Y | X ) p(X)
+\begin{enumerate}
+  \item Sample proposal $x \sim g(x)$
+  \item Generate $u \sim \text{Uniform}(0, 1)$
+  \item If $u < \frac{f(x)}{M g(x)}$ accept $x$
+  \item Go to step 1
+\end{enumerate}
+
+In the first step, the sample $x$ from a proposal
+distribution $g$ is generated.
+Then $u$ is randomly chosen such that $u \in [0, 1)$.
+As the condition in \eqref{eq:rejection-sampling-cond}
+must be kept, then $\frac{f(x)}{M g(x)} \leq 1$.
+The ratio $\frac{f(x)}{M g(x)}$ closer to $1$
+means the $x$ was generated from higher density
+region, rather than, when this ratio is closer 
+to $0$.
+Basically, higher the ratio is the more likely
+we accept $x$, and after sufficient amount of 
+steps, or accepted samples, the algorithm might 
+be terminated.
+The acceptation in this algorithm is related 
+with the term \textit{acceptance rate}, which is
+the ratio of number of accepted samples and 
+number of total samples generated.
+
+The algorithm depends on a very limiting condition:
+
+\begin{equation}\label{eq:rejection-sampling-cond}
+  M \geq \frac{f(x)}{g(x)}, \forall x
 \end{equation}
 
-where $\alpha$ can be computed from the chain. 
-MCMC methods differ in the way how they favour 
-higher probability areas, however, in their 
-underlaying structures, they usually somehow 
-follow the basic Metropolis algorithm (also 
-often with Hasting's modification).
+This means we have to choose sufficiently large $M$
+such that we are ensured the $M g(x)$ for every $x$
+creates envelope around whole $f$.
+However, if we pick $M$ too high,
+we will reject most of the samples, i.e., we will 
+achieve very low acceptance rate and
+the simulation will be computationally inefficient.
 
-TODO: incorporate interesting \cite{beichl2000} article
+The condition \eqref{eq:rejection-sampling-cond},
+and therefore the problem with acceptance rate,
+may be overcomed with employment of some type
+of memory.
+
+
+\section{Markov Chain Monte Carlo}
+
+\textit{Markov Chain Monte Carlo} (MCMC) is a class of 
+algorithms solving problem with sampling from a 
+\textit{target probability distribution} $f$ in more 
+efficient way than random sampling mentioned before. 
+Basic principle is to walk through 
+distribution, similarly as random sampling 
+does, but we also utilize the previously
+generated samples.
+These samples are forming a sequence
+assuming Markov property, hence the
+name \textit{Markov chain}.
+This Markov chain can be assumed as a some kind of
+short-term memory.
+
+In the following section, the Metropolis algorithm,
+which is the first MCMC algorithm considered, is 
+introduced.
+
+% The probability of samples generated by 
+% MCMC methods are proprotional to the the 
+% probabilities of the target distribution in 
+% the long run of particular Markov chain, 
+% therefore, we can rewrite Bayes theorem to:
+
+% \begin{equation}
+%   p( X | Y ) \propto p( Y | X ) p(X) \Rightarrow p( X | Y ) = \zeta^{-1} p( Y | X ) p(X)
+% \end{equation}
+
+% where $\alpha$ can be computed from the chain. 
+
+% MCMC methods differ in the way how they favour 
+% higher probability areas, however, in their 
+% underlaying structures, they usually somehow 
+% follow the basic Metropolis algorithm (also 
+% often with Hasting's modification).
+
 
 \subsection{Metropolis algorithm}
 
 The algorithm is named after his inventor, 
-Nicolas Metropolis, and is very first Monte 
+Nicholas Metropolis\footnote{\url{https://en.wikipedia.org/wiki/Nicholas_Metropolis}}, and is very first Monte 
 Carlo algorithm utilizing Markov chains 
-\cite{metropolis1953}, therefore, first 
-MCMC algorithm considered.
+\cite{metropolis1953}.
 Lets imagine, we are interested in theoretical 
-probability distribution $\pi(\theta)$ of 
-some parameter $\theta$. 
+probability distribution $f(x)$ of 
+some parameter $x$, which is not easily tractable 
+(same as in the case of rejection sampling).
 The idea is to gradually generate the 
-$\theta^\prime$ parameter into the sequence 
-forming Markov chain. 
-The generation is done with proposal distribution 
-$g(\theta^\prime | \theta_{i-1})$, which is 
-conditionally dependent on the last sample 
-$\theta_{i-1}$ in the forming Markov chain 
-(thus first-order Markov chain), to form 
-next sample in this chain. 
-The whole process is summarized in the 
-following steps. As the initial state 
-$\theta_0$, we usually put our initial prior, 
-which affects the speed of convergence - 
-more accurate the prior is, the faster the 
-convergence.
-
-In the step 2, the parameter proposal $\theta^\prime$ 
-is being generated, where, in the step 3, is used 
-to compute acceptance probability $\alpha$:
-
-\begin{equation}\label{eq:metropolis-alpha}
-  \alpha = min\left(1, \frac{f(\theta^\prime)}{f(\theta_{i-1})}\right)
-\end{equation}
-
-This probability is then compared with uniformly generated number in
-the interval $(0, 1]$ to decide whether accept the 
-sample or not. This may look a little bit cumbersome, 
-when we may accept parameter $\theta^\prime$ with 
-lower probability than $\theta_{i-1}$, but the 
-whole idea of acceptance probability is to let 
-explore further areas of state space to prevent 
-stuck in local minimum, however, the areas with 
-higher probability are still prefered.
-
-
-Input: initial state $\theta_0$
+$x^\prime$ parameter into the sequence 
+forming Markov chain.
+The generation is done with a proposal distribution 
+$g(x^\prime | x_{i})$ conditionally dependent on the last sample
+$x_{i}$ in the forming Markov chain\footnote{To be more specific, since the $g$ is conditionally dependent only on the last sample, it is so-called first-order Markov chain} $X_{0:i}$.
+Assume input $x_0$ and $i = 0$, then the algorithm process itself 
+might be summarized in the following steps:
 
 \begin{enumerate}
-  \item Set $i \leftarrow 1$
-  \item Generate proposal $\theta^\prime \sim g(\cdot | \theta_{i-1})$
-  \item Compute acceptance probability $\alpha$ according to \eqref{eq:metropolis-alpha}
+  \item Generate proposal $x^\prime \sim g(x^\prime | x_{i})$
+  \item Compute $\alpha$ according to \eqref{eq:metropolis-alpha}
   \item Generate $u \sim \text{Uniform}(0, 1)$
-  \item Set $\theta_{i} \leftarrow \begin{cases}
-    \theta^\prime, & \text{ if } u \leq \alpha,\\
-    \theta_{i-1}, & \text{ ow.}
+  \item Set $x_{i+1} \leftarrow \begin{cases}
+    x^\prime, & \text{ if } u \leq \alpha,\\
+    x_{i}, & \text{ ow.}
     \end{cases}
     $
-  \item Set $i \leftarrow i + 1$ and go to step 2
+  \item Set $i \leftarrow i + 1$ and go to \textit{step 1}
 \end{enumerate}
 
+In the first step, the parameter proposal $x^\prime$ is generated from proposal distribution $g$.
+The second step assumes computation of the \textit{acceptance probability} $\alpha$:
 
-After the sufficient amount of steps, the Markov 
+\begin{equation}\label{eq:metropolis-alpha}
+  \alpha = \min \left(1, \frac{f(x^\prime)}{f(x_{i})}\right)
+\end{equation}
+
+The ratio $\frac{f(x^\prime)}{f(x_{i})}$ expresses 
+how many times $x^\prime$ is more probable than $x_{i}$.
+This probability is then compared with uniformly generated $u \in [0, 1)$. 
+Note the similarity with rejection sampling defined in 
+\autoref{sec:rejection-sampling}.
+This may look a little bit cumbersome, 
+because of possibility of accepting $x^\prime$ with 
+lower probability than $x_{i-1}$, but the 
+whole idea of acceptance probability is to let 
+explore further areas of state space to prevent 
+stuck in local minimum. Basically, the 
+probability of transition into particular state is
+proportional to the probability of that state, i.e.,
+the states with higher probabilities are preferred.
+
+For the initial state 
+$x_0$, we usually put our initial prior, 
+which affects the speed of convergence - 
+the more accurate prior is the faster the 
+convergence is. After sufficient amount of steps, the Markov 
 chain should approximate the stationary target 
-distribution $\pi(\theta)$. These number of 
-sufficient steps defines \textit{burnin period}, 
-referencing the samples being discarded. This 
-is happening because it usually takes a while 
-until the parameters converge to form 
-stationary distribution - it largely 
-depends on the choice of prior as was mentioned. 
-Basically we take last $n$ samples of the 
-stationary distribution depicted by the 
-Markov chain.
+distribution $f(x)$.
+
+One of the primary pitfalls of the Metropolis algorithm is
+its unability in using asymmetric proposal distributions.
+This issue is solved by Hasting's modification.
+% These number of 
+% sufficient steps defines \textit{burnin period} 
+% referencing the samples being discarded. This 
+% is happening because it usually takes a while 
+% until the parameters converge to form 
+% a stationary distribution. It primarily 
+% depends on the choice of prior as was mentioned. 
+% Basically we take the last $n$ samples of the 
+% chain to represent samples from 
+% the posterior distribution.
 
 
 \subsection{Metropolis-Hastings algorithm}
 
-Is basically enhancement of the Metropolis algorithm 
-for asymetric proposal distributions introduced by 
+Metropolis-Hastings algorithm is a generalization
+of the Metropolis algorithm allowing to sample from
+asymmetric proposal distributions.
+This algorithm was first introduced by 
 Wilfred K. Hastings in 1970. 
-The only modification is the computation of the acceptance 
-probability $\alpha$, newly computed as:
+The only modification, as opposed to the Metropolis algorithm, 
+is using the following acceptance probability $\alpha$:
 
-\begin{equation}
-  \alpha = min\left(1, \frac{f(\theta^{\prime})}{f(\theta_{i-1})} \frac{g(\theta_{i-1} | \theta^{\prime})}{g(\theta^{\prime} | \theta_{i-1})}\right)  
+\begin{equation}\label{eq:metropolis-hastings-alpha}
+  \alpha = \min \left(1, \frac{f(x^{\prime})}{f(x_{i})} \frac{g(x_{i} | x^{\prime})}{g(x^{\prime} | x_{i})}\right)  
 \end{equation}
 
-Notice the change in adding multiplication by fraction 
-$\frac{g(\theta_{i-1} | \theta^{\prime})}{g(\theta^{\prime} | \theta_{i-1})}$ 
-which is the underlying extension above basic Metropolis 
-algorithm...TODO
+The difference lies only in adding multiplication
+with the ratio $\frac{g(x_{i} | x^{\prime})}{g(x^{\prime} | x_{i})}$
+which is originally derived from the detailed balance principle \cite[Chapter 11]{owen2013}:
 
+\begin{equation}
+  p(x^\prime | x) p(x) = p(x | x^\prime) p(x^\prime)
+\end{equation}
+
+Although the Metropolis algorithm was generalized to
+use asymmetric proposals, it is still quite inefficient
+in the exploring state space, especially for
+multidimensional problems.
+
+
+\subsection{Boltzmann factor}
+
+In many cases, the ratio of 
+two probabilities (as was seen in 
+\eqref{eq:metropolis-alpha} and \eqref{eq:metropolis-hastings-alpha}) is not
+computationally very feasible because of possibility of dividision 
+with very small numbers (even $0$) or infinity values.
+Therefore, for practical purposes, the physical analogy with 
+\textit{Boltzmann distribution} is being used \cite{murphy2021}.
+The Boltzmann distribution represents a probability of 
+certain state $x$ of physical system as:
+
+\begin{equation}
+  p(x) = \exp \left( -\frac{E(x)}{kT} \right)
+\end{equation}
+
+where $E(x)$ is energy of $x$, $T$ is 
+temperature and $k$ is Boltzmann's constant\footnote{\url{https://en.wikipedia.org/wiki/Boltzmann_constant}}.
+Since $k$ is always constant and we do not need 
+to simulate exact physical result of particles, 
+we usually put $k = 1$.
+This is usually used in the \textit{simulated annealing} where we
+decrease $T$ gradually with time (more on this in \cite[Chapter 8]{murphy2021}).
+If we assume $T = 1$, then:
+
+\begin{equation}
+  p(x) = \exp \left( -E(x) \right)
+\end{equation}
+
+And analogically:
+
+\begin{equation}
+  E(x) = -\log p(x)
+\end{equation}
+
+The basically states, the lower energy $E(x)$ of $x$ the higher probability of $x$.
+In statistics, $E$ is, in this case, called \textit{negative log probability}.
+Now we can derive the formula for the ratio of probabilities:
+
+\begin{equation}
+  \frac{p(x)}{p(y)} = \exp \left( -(E(x) - E(y)) \right) = \exp \left( E(y) - E(x) \right)
+\end{equation}
+
+For example, the acceptance probability \eqref{eq:metropolis-alpha} for Metropolis can be rewritten:
+
+\begin{equation}
+  \begin{split}
+    \alpha &= \min \left(
+    1, 
+    \exp\left( 
+      E(x_{i}) - E(x^\prime)
+    \right) 
+  \right) \\
+  & = \min \left(
+    1, 
+    \exp\left( 
+      \log f(x^\prime) - \log f(x_{i})
+    \right) 
+  \right)
+  \end{split}
+\end{equation}
+
+Similarly for the ratio in acceptance probability \eqref{eq:metropolis-hastings-alpha} of Metropolis–Hastings:
+
+\begin{equation}
+  \exp \left( \log f(x_{i}) + \log g(x^{\prime} | x_{i}) - \log f(x^\prime) - \log g(x_{i} | x^{\prime}) \right)
+\end{equation}
+
+% \begin{equation}\label{eq:metropolis-hastings-alpha}
+%   \alpha = min\left(1, \frac{f(x^{\prime})}{f(x_{i})} \frac{g(x_{i} | x^{\prime})}{g(x^{\prime} | x_{i})}\right)  
+% \end{equation}
 
 \subsection{Hamiltonian Monte Carlo}
 
-Hamiltonian Monte Carlo (HMC) is another Metropolis-Hastings 
-based algorithm, moreover, it utilizes physical analogy to 
-help converge faster \cite{betancourt2018}. 
+\textit{Hamiltonian Monte Carlo} (HMC) is another Metropolis-Hastings 
+based algorithm, but it utilizes physical analogy to 
+generate proposals more efficiently \cite{betancourt2018}.
+
 It started with Hybrid Monte Carlo paper \cite{duane1987}, 
 which utilized Monte Carlo to understand the structure 
 of atoms. 
-The Radford Neal laterly recognized the potential of 
+Radford Neal laterly recognized the potential of 
 this method during his focus on Bayesian neural networks 
 within his doctoral thesis \cite{neal1995}. 
-After a few years, it was referenced by some literature, 
-until the review of Neal again \cite{neal2011} and availability 
-of high performance software to such a computation.
+\cite{mackay2003} started to use 
+term \textit{Hamiltonian Monte Carlo} under which this 
+method is known to this day.
+Neal, again, did a big review of HMC \cite{neal2011}.
+But for wider use, HMC had to 
+wait to advent of highly efficient 
+computational software allowing its practical usage.
 
 In Hamiltonian dynamics, state is characterized by the
-\textit{position vector} $q$ and the \textit{momentum vector} $q$,
+\textit{position vector} $x$ and the \textit{momentum vector} $p$,
 both are $d$-dimensional, hence $2d$-dimensional state.
 We usually describe this system by the function of
-this state $H(q, p)$, called \textit{Hamiltonian}.
-
-Hamilton’s equations describe how $q$ and
+this state $H(x, p)$, called \textit{Hamiltonian}.
+The Hamilton’s equations describe how position $x$ and
 $p$ change in time $t$ by the partial derivatives \cite{neal2011}:
 
 \begin{equation}
-  \frac{\partial q_i}{\partial t} = \frac{\partial H}{\partial p_i}
+  \frac{\partial x_i}{\partial t} = \frac{\partial H}{\partial p_i}
 \end{equation}
 
 \begin{equation}
-  \frac{\partial p_i}{\partial t} = - \frac{\partial H}{\partial q_i}
+  \frac{\partial p_i}{\partial t} = - \frac{\partial H}{\partial x_i}
 \end{equation}
 
 The Hamiltonian $H$ can be tought as a total energy in the system,
-i.e. sum of \textit{kinetic energy} $K$ and \textit{potential energy} $U$:
+i.e. sum of \textit{potential energy} $U$ and \textit{kinetic energy} $K$:
 
 \begin{equation}
-  H(q, p) = U(q) + K(p)
+  H(x, p) = U(x) + K(p)
 \end{equation}
 
 The $U$ is assumed as log probability density of the distribution
-of position vector $q$ we want to sample from.
+of position vector $q$ we want to sample from:
 
-Kinetic energy $K$ is assumed as to be $p^\intercal M^{-1} p$, 
-where $M$ is mass matrix, which is diagonal, i.e. with
-diagonal elements $2m_1, ..., 2m_d$, therefore the computation of $K$
-can be simplified:
+\begin{equation}
+  U(x) = -log f(x)
+\end{equation}
+
+Kinetic energy $K$ is assumed as:
 
 \begin{equation}
   K(p) = \sum_{i=1}^{d} \frac{p_i^2}{2 m_i}
@@ -1635,53 +2105,80 @@ From the perspective of statistical mechanics, the $H$ can be seen
 as a joint probability distribution
 
 \begin{equation}
-  P(x) = \frac{1}{Z} exp \left( \frac{-E(x)}{T} \right)
+  p(x) = \frac{1}{Z} exp \left( -E(x) \right)
 \end{equation}
 
 \begin{equation}
-  P(q, p) = \frac{1}{Z} exp \left( \frac{-H(q, p)}{T} \right)
+  p(x, p) = \frac{1}{Z} exp \left( -H(x, p) \right)
 \end{equation}
 
 \begin{equation}
-  P(q, p) = \frac{1}{Z} exp \left( \frac{-U(q)}{T} \right) exp \left( \frac{-K(p)}{T} \right)
+  p(x, p) = \frac{1}{Z} exp \left( -U(x) \right) exp \left( -K(p) \right)
 \end{equation}
 
 \subsection{No U-Turn Sampler}
+\label{sec:nuts}
 
-\section{PyMC}
+Visualisations \cite{mcelreath2017}
 
-PyMC3 is probabilistic programming tool, more specifically, 
+\section{PyMC3}
+
+PyMC3\footnote{\url{https://docs.pymc.io/en/v3/}} 
+is probabilistic programming tool, more specifically, 
 it is a Python package capable of Bayesian statistical 
 inference using both stochastic and deterministic algorithms. 
-The PyMC3 is built upon a Theano (currently fork of 
-Theano called Aesara, because Theano is not developed anymore), 
-which basically allows to describe mathematical operations in 
-high level fashion. 
-Those are then transformed to the low level instructions to 
-support efficient processing by CPU(s) or GPU(s), just then 
-those operations are being executed. 
-This is kind of similar to query planning and execution in 
-relational databases.
+Features include: variety of MCMC algorithms,
+modelling Gaussian processes, advanced plotting
+(using ArViz library).
 
-PyMC3 offers MCMC and variational inference methods.
-The MCMC includes Metropolis–Hastings (which is its default 
-engine for discrete variables), HMC and NUTS sampler (default 
-for continuous variables)
+PyMC began development in 2003 with idea
+bringing Metropolis–Hastings samplers closer to 
+the applied scientists.
+First public version was released in 2005,
+after few year, in 2011, the development team
+started to solve how to implement gradient-based MCMC samplers
+to boost up performance.
+These were brought into PyMC in version 3
+in 2015 when first alpha was released.
+The first official release of PyMC3 was in 2017.
+
+The PyMC3 is built upon a Theano\footnote{currently fork of 
+Theano called Aesara, Theano is not developed anymore},
+which basically allows descriptive modelling 
+of mathematical operations.
+These are then optimized and transformed,
+without much of the user's effort, to 
+the low level instructions to support efficient 
+processing by CPU(s) or GPU(s).
+Similar principle can be seen also in Tensorflow 
+\cite{tf} or PyTorch \cite{pytorch}.
+This is kind of similar to query planning and execution
+in big data processing, where the user desribes what
+he wants, but usually does not tell the system how 
+to achieve it.
+
+Another alternatives to PyMC3 are, for example,
+TensorFlow Probability \cite{tfp}, Pyro \cite{pyro} and
+Stan\footnote{The name gives honour to Stan Ulam, father of MC, as mentioned in \autoref{sec:monte-carlo}} \cite{stanmc}
+(and its Python alternative PyStan).
+The reason for choosing PyMC3 over others is its
+easy Python integration, high-level of abstraction,
+and wide community of users.
 
 
-\section{The inference of incidence}
+\section{The probabilistic model revisited}
 
-Let us recall the chosen probabilistic mode of incidence.
+Let us recall the chosen probabilistic model of incidence.
 The likelihood is given by the \textit{negative binomial distribution}:
 
 \begin{equation}
-  c \sim NegBin(\mu=exp(\theta), \alpha)
+  c \sim \text{NegBin} (\mu=exp(\theta), \alpha)
 \end{equation}
 
 which is dependent on $\theta$ and $\alpha$ variables distributed as:
 
 \begin{equation}
-  \alpha \sim Exponential(\lambda_\alpha)
+  \alpha \sim \text{Exponential} (\lambda_\alpha)
 \end{equation}
 
 \begin{equation}
@@ -1693,114 +2190,209 @@ coefficient $a$ and $b$ for linear trend, which are
 given by Gaussians:
 
 \begin{equation}
-  a \sim N(\mu_a, \sigma_a)
-\end{equation}
-
-\begin{equation}
-  b \sim N(\mu_b, \sigma_b)
+  \begin{split}
+    a \sim N(\mu_a, \sigma_a) \\
+    b \sim N(\mu_b, \sigma_b)
+  \end{split}
 \end{equation}
 
 In the model $\mu_a$, $\mu_b$, $\sigma_a$, $\sigma_b$, 
 $\lambda_\alpha$ and $\eta$ can be 
 considered hyperparameters, which are tunned manually here.
 
-\begin{figure}[h]
+Lets apply the previous to the Bayesian theorem.
+To recall \eqref{eq:bayes-theorem-customized}:
+
+\begin{equation}
+  p( X | Y_c, Z ) = \zeta^{-1} p( Y_c | X ) p(X | Z)
+\end{equation}
+
+The latent state $X$ is a set of parameters we would like
+to infer, in our case $X = (\theta, \alpha, a, b)$.
+$Z$ is a set of hyperparameters tuned manually 
+$Z = (\lambda_\alpha, \eta, \mu_a, \mu_b, \sigma_a, \sigma_b)$.
+
+Therefore our posterior is given by:
+
+\begin{equation}
+  p \left( \theta, \alpha, a, b | Y_c; \lambda_\alpha, \eta, \mu_a, \mu_b, \sigma_a, \sigma_b \right)
+\end{equation}
+
+which is proportional to:
+
+\begin{equation}\label{eq:inc-model-joint-expanded}
+   p( Y_c | \theta, \alpha ) p( \alpha | \lambda_\alpha ) p ( \theta | a, b, \eta ) p ( a | \mu_a, \sigma_a ) p ( b | \mu_b, \sigma_b )
+\end{equation}
+
+This definitely would not have an easy analytical solution,
+as we have to integrate over all
+$\theta$, $\alpha$, $a$ and $b$ to obtain normalization constant,
+so lets employ MCMC theory through PyMC3 computation to
+help us to infer $X$.
+
+
+\section{The inference of incidence}
+\label{sec:inference-of-incidence}
+
+We are now getting to the core of the problem itself, 
+the inference of unknown 
+parameters $X$ via PyMC3. Naturally, PyMC3 have to build 
+its own internal representation of a model.
+The internal representation looks like
+a \textit{directed acyclic graph} (DAG), which
+is basically a \textit{Bayesian network}:
+
+\begin{figure}[H]
   \begin{center}
-    \includegraphics[width=8cm]{generated/images/inc-model-graphviz.png}
+    \includegraphics[width=8cm]{static/images/inc-model-graphviz.png}
   \end{center}
   \caption{Internal PyMC3 DAG representation of our incidence model}
   \label{fig:inc-model-graphviz}
 \end{figure}
 
+In the figure \ref{fig:inc-model-graphviz}\footnote{Created by snippet \ref{snip:inc-model-graphviz}},
+we can see how PyMC3 represents our particular incidence model (given by snippet \ref{snip:inc-model-build-func}),
+where the shapes represents each particular distribution.
+The highlighted shape is a likelihood and the outlined 
+shapes represent priors, similarly as our theoretical 
+model \ref{eq:inc-model-joint-expanded}.
+The only minor discrepancy might be seen in PyMC3's representation of $\theta$.
+This is given by the nature of $\theta$ as a Gaussian process, as it is 
+basically multidimensional normal distribution,
+and PyMC3 uses\footnote{See \url{https://github.com/pymc-devs/pymc/blob/main/pymc/gp/gp.py\#L303}} rotating by \textit{Cholesky 
+factor} \cite[Chapter 7]{murphy2021}.
+In our case, the dimensionality of $\theta$ is equal to 
+the size of incidence window $T_w$.
+
 To approximate incidence properly, we need to tune up model for
 as much specific cases as possible. Ideally, we should try to approximate
-whole incidence upon all the data, however, it will be very laborious.
-Instead of that, we can grab few samples again. Those samples should
-represent both regular cases and also edge cases.
-For this reason, we pick the following samples for incidence validation:
+whole incidence upon all the data, however, it will be very laborious 
+due to the dimensionality of the data.
+Instead of that, we will again grab few samples of size $T_w$. 
+Those samples should represent various heterogeneous cases to ensure 
+robustness of the model.
+For this reason, we picked the following samples for incidence fitting:
 
 \begin{enumerate}
-  \item noisy incidence (\ref{fig:dev-incidence-1})
-  \item low (almost zero) incidence (\ref{fig:dev-incidence-2})
-  \item regular growing incidence (\ref{fig:dev-incidence-3})
+  \item Noisy incidence as in \ref{fig:dev-incidence-1}:
+  \begin{figure}[H]
+    \begin{center}
+      \includegraphics[width=9cm]{generated/images/inc-model-sample-incidence-1.png}
+    \end{center}
+    \caption{Sample 1 for the incidence inference tuning}
+    \label{fig:dev-incidence-1}
+  \end{figure}
+  \item Low (almost zero) incidence (\ref{fig:dev-incidence-2})
+  \item Regular growing incidence (\ref{fig:dev-incidence-3})
 \end{enumerate}
 
-\begin{figure}[h]
+
+\subsection{Sampling}
+
+For sampling the posterior distribution we use NUTS, mentioned
+in \autoref{sec:nuts}, because of its good performance 
+in multidimensional problems.
+In PyMC3, the NUTS sampler has several options
+to tune for better performance\footnote{See official documentation \url{https://docs.pymc.io/en/v3/api/inference.html}}, but for our case, the
+basic settings are sufficient.
+
+Now we are ready for sampling.
+Usually, in MCMC inference, we run several independent
+Markov chains in parallel.
+This is because sometimes the convergence may not be 
+successful and we are not able to recognize that.
+If we run multiple simulations in parallel,
+we can compare results with each other.
+
+After sampling 4 chains, we obtain the following posterior
+distribution of $X$:
+
+\begin{figure}[H]
   \begin{center}
-    \includegraphics[width=10cm]{generated/images/theta-posterior-1.png}
+    \includegraphics[width=10cm]{generated/images/inc-model-params-trace-1.png}
+  \end{center}
+  \caption{Posterior trace of parameters $X$ for sample 1}
+  \label{fig:params-trace-1}
+\end{figure}
+
+On the left side, in the figure \ref{fig:params-trace-1},
+we see results for each of the parameters 
+$\theta$, $\alpha$, $a$ and $b$ as rows.
+On the left side of the figure, we see how each 
+particular chain performed in comparison with other chains.
+On the right side, we see the chain of last 1000 samples 
+we desired (samples from burnin period are discarded).
+Note the dimensionality of $\theta$ makes this 
+figure a little bit unclear.
+For this purposes we can plot the posterior of 
+the Gaussian process in a separated plot:
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=10cm]{generated/images/inc-model-theta-posterior-1.png}
   \end{center}
   \caption{Posterior of $\theta$ for sample 1}
   \label{fig:theta-posterior-1}
 \end{figure}
 
-% \begin{figure}
-%   \begin{minipage}{.5\textwidth}
-%     \includegraphics{images/incidence-posterior-predictive-1.png}
-%    \caption{Sample 1}
-%   \end{minipage}
-%   \begin{minipage}{.5\textwidth}
-%     \includegraphics{images/incidence-posterior-predictive-2.png}
-%    \caption{Sample 2}
-%   \end{minipage}
-%  \end{figure}
+The figure \ref{fig:theta-posterior-1} may somehow remind
+the original data (actually it should be the logarithm of the incidence mean).
+To check if our model performed well, we usually 
+need to plot something we can compare. In the case of
+Bayesian inference, we can use \textit{posterior predictive check}.
 
-% \begin{figure}[h]
-%   \subfigure[Sample 1]{\includegraphics[width=10cm]{images/incidence-posterior-predictive-1.png}\label{fig:incidence-posterior-1}}
-%   \subfigure[Sample 2]{\includegraphics[width=10cm]{images/incidence-posterior-predictive-2.png}\label{fig:incidence-posterior-2}}
-%   \caption{main caption}\label{main_label}
-% \end{figure}
 
-% \begin{figure}[h]
-%   \centering
-%   % \begin{center}
-%     \includegraphics[width=10cm]{images/incidence-posterior-predictive-1.png}
-%     \caption{Posterior predictive of TODO: incidence for sample 1}
-%     \label{fig:incidence-posterior-1}
-%   % \end{center}
+\section{Posterior predictive check}
 
-%   % \begin{center}
-%     \includegraphics[width=10cm]{images/incidence-posterior-predictive-2.png}
-%     % \caption{Posterior predictive of TODO: incidence for sample 2}
-%     \label{fig:incidence-posterior-2}
-%   % \end{center}
+\textit{Posterior predictive check} (PPC) can be characterized as a replication
+of the original dataset from the inferred data. 
+Basically, we reverse the inference algorithm,
+i.e., take inferred parameters and utilize them to generate
+approximation of the observed data.
+This allows us to check the discrepancies between that approximation
+and observed data.
 
-%   % \begin{center}
-%     \includegraphics[width=10cm]{images/incidence-posterior-predictive-3.png}
-%     % \caption{Posterior predictive of TODO: incidence for sample 3}
-%     \label{fig:incidence-posterior-3}
-%   % \end{center}
-% \end{figure}
+The following plots present capability of fitting the observed
+incidence by the incidence model presented before. The first plot
+is valid for the first sample (\ref{fig:dev-incidence-1}) of incidence observations defined in \autoref{sec:inference-of-incidence}.
+To recall, the first sample represents noisy 
+observations (PPC in figure \ref{fig:incidence-posterior-1}\footnote{Created by snippet \ref{snip:inc-model-ppc-plot-1}}):
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
-  \includegraphics[width=10cm]{generated/images/incidence-posterior-predictive-1.png}
+  \includegraphics[width=11cm]{generated/images/inc-model-ppc-plot-1.png}
   \caption{Posterior predictive of $\hat{c}$ for sample 1}
   \label{fig:incidence-posterior-1}
 \end{figure}
 
-\begin{figure}[h]
+The second sample (\ref{fig:dev-incidence-2}) represents low (almost zero) 
+incidence (PPC in figure \ref{fig:incidence-posterior-2}\footnote{Created by snippet \ref{snip:inc-model-ppc-plot-2}}):
+
+\begin{figure}[H]
   \centering
-  \includegraphics[width=10cm]{generated/images/incidence-posterior-predictive-2.png}
+  \includegraphics[width=10cm]{generated/images/inc-model-ppc-plot-2.png}
   \caption{Posterior predictive of $\hat{c}$ for sample 2}
   \label{fig:incidence-posterior-2}
 \end{figure}
 
-\begin{figure}[h]
+And finally, the third sample (\ref{fig:dev-incidence-3}) is for
+regularly growing
+incidence (PPC in figure \ref{fig:incidence-posterior-3}\footnote{Created by snippet \ref{snip:inc-model-ppc-plot-3}}):
+
+\begin{figure}[H]
   \centering
-  \includegraphics[width=10cm]{generated/images/incidence-posterior-predictive-3.png}
+  \includegraphics[width=10cm]{generated/images/inc-model-ppc-plot-3.png}
   \caption{Posterior predictive of $\hat{c}$ for sample 3}
   \label{fig:incidence-posterior-3}
 \end{figure}
 
 
-\chapter{The risk model}
+\chapter{The risk reviewed}
 
 For the next steps, we will switch back to the deterministic 
 world, at least, in terms of computation, to retain simplicity of our model.
 
 \section{Prevalence estimation}
-
-\section{Validation}
 
 In the previous chapter, we established the probabilistic
 incidence inference model capable of fit very noisy observations.
@@ -1850,49 +2442,71 @@ where $w$ is the mean serial interval. In our case, $w$ is a vector, therefore:
   \gamma_t = \frac{1}{\mathbb{E}[w]}
 \end{equation}
 
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[width=11cm]{generated/images/risk-model-fake-rt.png}
-  \end{center}
-  \caption{Generated $\mathcal{R}_{e}$}
-  \label{fig:risk-model-fake-rt}
-\end{figure}
+% \begin{figure}[h]
+%   \begin{center}
+%     \includegraphics[width=11cm]{generated/images/risk-model-fake-rt.png}
+%   \end{center}
+%   \caption{Generated $\mathcal{R}_{e}$}
+%   \label{fig:risk-model-fake-rt}
+% \end{figure}
 
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[width=11cm]{generated/images/risk-model-fake-sir.png}
-  \end{center}
-  \caption{Generated SIR data}
-  \label{fig:risk-model-fake-sir}
-\end{figure}
+% \begin{figure}[h]
+%   \begin{center}
+%     \includegraphics[width=11cm]{generated/images/risk-model-fake-sir.png}
+%   \end{center}
+%   \caption{Generated SIR data}
+%   \label{fig:risk-model-fake-sir}
+% \end{figure}
 
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[width=11cm]{generated/images/risk-model-fake-incidence.png}
-  \end{center}
-  \caption{Generated incidence}
-  \label{fig:risk-model-fake-incidence}
-\end{figure}
+% \begin{figure}[h]
+%   \begin{center}
+%     \includegraphics[width=11cm]{generated/images/risk-model-fake-incidence.png}
+%   \end{center}
+%   \caption{Generated incidence}
+%   \label{fig:risk-model-fake-incidence}
+% \end{figure}
 
-\begin{figure}[h]
-  \begin{center}
-    \includegraphics[width=11cm]{generated/images/risk-model-incidence-posterior-predictive.png}
-  \end{center}
-  \caption{Posterior TODO:}
-  \label{fig:risk-model-fake-incidence}
-\end{figure}
+% \begin{figure}[h]
+%   \begin{center}
+%     \includegraphics[width=11cm]{generated/images/risk-model-incidence-posterior-predictive.png}
+%   \end{center}
+%   \caption{Posterior TODO:}
+%   \label{fig:risk-model-fake-incidence}
+% \end{figure}
+
+\section{The risk computation}
+
+
+\section{Real data examples}
 
 
 \chapter{Conclusion}
 
+To summarize what we have achieved, we presented minimal 
+epidemiological theory needed to understand the approach
+in this thesis, then the real-world situation was 
+presented. First, the data was gathered and analyzed to
+get know its availablity and form.
+Then the model, consisting of two parts, was built upon.
+The first part is the probabilistic incidence approximation, 
+which is then utilized in the second part - the risk
+computation, which is deterministic in its nature, but,
+as it is built upon the posterior predictive of incidence,
+it provides uncertainty intervals to compute final risk of
+infectious contact.
+
+TODO: The results...
+
+As this is just a demonstration of using probabilistic
+programming in the epidemiological modelling, it
+should not be considered as a real epidemiological tool.
+Despite the fact, it provides quite good results,
+therefore, maybe one day, someone will tune this up to
+be truly useful epidemiological tool.
 
 \cite{blei2018}
 
 
-
-
-
-\cite{pfeffer2016}
 \cite{davidson-pilon2015}
 
 
@@ -1902,20 +2516,13 @@ where $w$ is the mean serial interval. In our case, $w$ is a vector, therefore:
 
 \chapter{An appendix}
 
-\input{generated/tables/adf-test-brno}
-\input{generated/tables/adf-test-ostrava}
+\input{generated/tables/data-adf-test-brno}
+\input{generated/tables/data-adf-test-ostrava}
+
 
 \begin{figure}[H]
   \begin{center}
-    \includegraphics[width=\textwidth]{generated/images/dev-incidence-1.png}
-  \end{center}
-  \caption{Sample 1 for the incidence inference tuning}
-  \label{fig:dev-incidence-1}
-\end{figure}
-
-\begin{figure}[H]
-  \begin{center}
-    \includegraphics[width=\textwidth]{generated/images/dev-incidence-2.png}
+    \includegraphics[width=\textwidth]{generated/images/inc-model-sample-incidence-2.png}
   \end{center}
   \caption{Sample 2 for the incidence inference tuning}
   \label{fig:dev-incidence-2}
@@ -1923,16 +2530,38 @@ where $w$ is the mean serial interval. In our case, $w$ is a vector, therefore:
 
 \begin{figure}[H]
   \begin{center}
-    \includegraphics[width=\textwidth]{generated/images/dev-incidence-3.png}
+    \includegraphics[width=\textwidth]{generated/images/inc-model-sample-incidence-3.png}
   \end{center}
   \caption{Sample 3 for the incidence inference tuning}
   \label{fig:dev-incidence-3}
 \end{figure}
 
 
+
 \begin{figure}[H]
   \begin{center}
-    \includegraphics[width=\textwidth]{generated/images/theta-posterior-2.png}
+    \includegraphics[width=11cm]{generated/images/inc-model-params-trace-2.png}
+  \end{center}
+  \caption{Posterior trace of parameters $X$ for sample 2}
+  \label{fig:params-trace-2}
+\end{figure}
+
+
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=11cm]{generated/images/inc-model-params-trace-3.png}
+  \end{center}
+  \caption{Posterior trace of parameters $X$ for sample 3}
+  \label{fig:params-trace-3}
+\end{figure}
+
+
+
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=\textwidth]{generated/images/inc-model-theta-posterior-2.png}
   \end{center}
   \caption{Posterior of $\theta$ for sample 2}
   \label{fig:theta-posterior-2}
@@ -1940,7 +2569,7 @@ where $w$ is the mean serial interval. In our case, $w$ is a vector, therefore:
 
 \begin{figure}[H]
   \begin{center}
-    \includegraphics[width=\textwidth]{generated/images/theta-posterior-3.png}
+    \includegraphics[width=\textwidth]{generated/images/inc-model-theta-posterior-3.png}
   \end{center}
   \caption{Posterior of $\theta$ for sample 3}
   \label{fig:theta-posterior-3}
@@ -1956,23 +2585,71 @@ where $w$ is the mean serial interval. In our case, $w$ is a vector, therefore:
 
 \subsection{Utilities}
 
-\input{generated/snippets/utils-base-figure}
-\input{generated/snippets/utils-base-plotly}
-\input{generated/snippets/utils-base-matplotlib}
-\input{generated/snippets/utils-base-latex}
+\input{generated/snippets/config.tex}
+
+\input{generated/snippets/utils-base-figure.tex}
+\input{generated/snippets/utils-base-plotly.tex}
+\input{generated/snippets/utils-base-matplotlib.tex}
+\input{generated/snippets/utils-base-latex.tex}
+\input{generated/snippets/utils-data-node.tex}
+% FIXME: resolve the unicode issues
+% \input{generated/snippets/utils-cz-root.tex}
 \input{generated/snippets/utils-adf-test}
 
 \subsection{Data wrangling}
 
-% \input{generated/snippets/data-serial-interval}
-% \input{generated/snippets/data-serial-interval-instances}
-% \input{generated/snippets/data-serial-interval-overview}
-% \input{generated/snippets/data-incidence}
-% \input{generated/snippets/data-largest-cities-plot}
-% \input{generated/snippets/data-adf-test-prague}
-% \input{generated/snippets/data-adf-test-brno-ostrava}
-% \input{generated/snippets/data-seasonal-decomposition-figure}
-% \input{generated/snippets/data-seasonal-decomposition-additive}
-% \input{generated/snippets/data-seasonal-decomposition-multiplicative}
+\input{generated/snippets/data-serial-interval-base.tex}
+\input{generated/snippets/data-serial-interval-instances.tex}
+\input{generated/snippets/data-serial-intervals-overview.tex}
+\input{generated/snippets/data-incidence.tex}
+\input{generated/snippets/data-node-instances.tex}
+\input{generated/snippets/data-largest-cities-plot.tex}
+\input{generated/snippets/data-adf-test-prague.tex}
+\input{generated/snippets/data-adf-test-brno-ostrava.tex}
+\input{generated/snippets/data-seasonal-decomposition-figure.tex}
+\input{generated/snippets/data-seasonal-decomposition-additive.tex}
+\input{generated/snippets/data-seasonal-decomposition-multiplicative.tex}
+
+\subsection{Incidence model}
+
+\input{generated/snippets/incidence-log-transform-plot.tex}
+\input{generated/snippets/theta-diff-plot.tex}
+\input{generated/snippets/theta-diff-sample-windows-plot.tex}
+\input{generated/snippets/theta-diff-histogram.tex}
+\input{generated/snippets/theta-diff-qq-plot.tex}
+\input{generated/snippets/theta-diff-ecdf-plot.tex}
+% FIXME:
+%\input{generated/snippets/theta-diff-ks-test.tex}
+\input{generated/snippets/theta-diff-lilliefors-test.tex}
+\input{generated/snippets/theta-diff-shapiro-wilk-test.tex}
+
+\input{generated/snippets/inc-model-sample-incidence-figure.tex}
+\input{generated/snippets/inc-model-sample-incidence-1.tex}
+\input{generated/snippets/inc-model-sample-incidence-2.tex}
+\input{generated/snippets/inc-model-sample-incidence-3.tex}
+
+\input{generated/snippets/inc-model-build-func.tex}
+\input{generated/snippets/inc-model-build-on-samples.tex}
+\input{generated/snippets/inc-model-graphviz.tex}
+\input{generated/snippets/inc-model-sampling-func.tex}
+\input{generated/snippets/inc-model-sampling-1.tex}
+\input{generated/snippets/inc-model-sampling-2.tex}
+\input{generated/snippets/inc-model-sampling-3.tex}
+\input{generated/snippets/inc-model-sampling-trace-plot-1.tex}
+\input{generated/snippets/inc-model-sampling-trace-plot-2.tex}
+\input{generated/snippets/inc-model-sampling-trace-plot-3.tex}
+\input{generated/snippets/inc-model-theta-posterior-figure.tex}
+\input{generated/snippets/inc-model-theta-posterior-1.tex}
+\input{generated/snippets/inc-model-theta-posterior-2.tex}
+\input{generated/snippets/inc-model-theta-posterior-3.tex}
+
+\input{generated/snippets/inc-model-pp-func.tex}
+\input{generated/snippets/inc-model-ppc-1.tex}
+\input{generated/snippets/inc-model-ppc-2.tex}
+\input{generated/snippets/inc-model-ppc-3.tex}
+\input{generated/snippets/inc-model-ppc-figure.tex}
+\input{generated/snippets/inc-model-ppc-plot-1.tex}
+\input{generated/snippets/inc-model-ppc-plot-2.tex}
+\input{generated/snippets/inc-model-ppc-plot-3.tex}
 
 \end{document}
