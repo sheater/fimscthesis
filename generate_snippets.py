@@ -37,6 +37,9 @@ if __name__ == "__main__":
                 continue
 
             source = cell["source"]
+            if len(source) == 0:
+                continue
+
             if r"\snippet-ignore" in source[0]:
                 continue
 
@@ -51,7 +54,7 @@ if __name__ == "__main__":
                 code = r"\begin{lstlisting}" + \
                     r"[label={snip:" + label + r"}," + \
                     r"caption={" + caption + r"}," + \
-                    r"basicstyle=\ttfamily\footnotesize,language=python]" + "\n" + \
+                    r"basicstyle=\ttfamily\tiny,language=python]" + "\n" + \
                     "".join(source[1:]) + "\n" + \
                     r"\end{lstlisting}" + "\n"
                     # convert_source_to_latex("".join(source[1:])) + "\n" + \
@@ -65,3 +68,5 @@ if __name__ == "__main__":
                 logging.warning("No snippet tag for:")
 
                 print("".join(source[:5]))
+
+    print("Done.")
