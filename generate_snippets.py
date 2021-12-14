@@ -24,6 +24,25 @@ PATTERN = re.compile(r"\\snippet\{([\w-]+)\}\{([^\}]+)\}")
 #     "Ž": r"\v{Z}",
 #     "ď": r"\v{d}"
 # }
+# LATEX_CHAR_MAP = {
+#     "í": r"i",
+#     "ě": r"e",
+#     "é": r"e",
+#     "ř": r"r",
+#     "č": r"c",
+#     "ý": r"y",
+#     "š": r"s",
+#     "Š": r"S",
+#     "á": r"a",
+#     "ů": r"u",
+#     "Č": r"C",
+#     "ň": r"n",
+#     "Ú": r"U",
+#     "ž": r"z",
+#     "Ž": r"Z",
+#     "ď": r"d"
+# }
+
 
 # def convert_source_to_latex(source: str) -> str:
 #     return "".join([LATEX_CHAR_MAP.get(x, x) for x in source])
@@ -57,7 +76,7 @@ if __name__ == "__main__":
                     r"basicstyle=\ttfamily\tiny,language=python]" + "\n" + \
                     "".join(source[1:]) + "\n" + \
                     r"\end{lstlisting}" + "\n"
-                    # convert_source_to_latex("".join(source[1:])) + "\n" + \
+                # convert_source_to_latex("".join(source[1:])) + "\n" + \
 
                 filepath = "generated/snippets/{}.tex".format(label)
 
